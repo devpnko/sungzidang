@@ -10,6 +10,20 @@ import time
 import uuid
 import pandas as pd
 import random
+import os
+
+# --- Reference Data Loading ---
+def load_reference_data():
+    """Loads reference data (models, plans) from JSON file."""
+    try:
+        with open('data/reference_db.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        return data
+    except FileNotFoundError:
+        return {"models": [], "plans": []}
+
+REFERENCE_DATA = load_reference_data()
+VALID_MODEL_NAMES = [m['name'] for m in REFERENCE_DATA.get('models', [])]
 
 # --- 유틸리티: 랜덤 파스텔 색상 생성 (어두운 색 방지) ---
 def get_random_pastel_color():
@@ -26,20 +40,40 @@ class PolicyData:
         self.color_hex = color_hex # 사용자가 지정한 색상 코드
 
 # --- 1. Gemini 파싱 함수 (배틀용) ---
-def parse_image_with_gemini(file_bytes, agency_name, color_hex, api_key, model_name):
+def parse_image_with_gemini_v2(file_bytes, agency_name, color_hex, api_key, model_name):
+    """V2 전용: 배틀 모드에서 사용하는 Gemini 파싱 함수"""
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel(model_name)
     
     prompt = """
-    Analyze this mobile phone price sheet image.
+    Analyze this mobile phone price sheet image very carefully.
+    
+    **CRITICAL Instructions:**
+    1. Read the column headers EXACTLY as shown in the image. Pay special attention to:
+       - Distinguish between similar-looking letters (I vs J, l vs 1, O vs 0)
+       - Read each header cell individually and precisely
+    
+    2. For the first column (모델명/Model Name), extract BOTH:
+       - The model code (e.g., SM-F766N, SM-S921N) - this is crucial!
+       - The Korean model name if visible
+    
     Return JSON with two parts:
     1. "table": A list of lists representing the grid. Row 1 is headers.
+       - Row 1 should contain the EXACT header text from the image
+       - For model rows: First cell should contain the model CODE (SM-XXXX format)
        - Convert all prices to integers (e.g., 45, -5). If empty, use null.
-       - Normalize Model names if possible (e.g., 'gal24' -> 'S24').
+       - DO NOT normalize model names yet - keep the original model codes
     2. "footer": Extract all condition texts at the bottom as a single string.
     
     Structure: {"table": [[...], ...], "footer": "..."}
     Output ONLY JSON.
+    
+    Example table format:
+    [
+      ["모델명", "공시지원금", "I", "J", ...],  // Exact headers from image
+      ["SM-F766N", 100, 45, 50, ...],           // Model code in first cell
+      ...
+    ]
     """
     
     response = model.generate_content([prompt, {"mime_type": "image/jpeg", "data": file_bytes}])
@@ -50,6 +84,24 @@ def parse_image_with_gemini(file_bytes, agency_name, color_hex, api_key, model_n
     headers = data["table"][0]
     rows = data["table"][1:]
     df = pd.DataFrame(rows, columns=headers)
+    
+    # 모델 코드를 표준 모델명으로 매핑
+    def map_model_code_to_name(code):
+        """모델 코드(SM-XXXX)를 reference_db.json의 표준 모델명으로 변환"""
+        if not code or not isinstance(code, str):
+            return code
+        
+        # 정확한 매칭 시도
+        for model_info in REFERENCE_DATA.get('models', []):
+            if code in model_info.get('codes', []):
+                return model_info['name']
+        
+        # 매칭 실패시 원래 값 반환
+        return code
+    
+    # 첫 번째 컬럼(모델명)을 표준 이름으로 변환
+    first_col = df.columns[0]
+    df[first_col] = df[first_col].apply(map_model_code_to_name)
     
     # 인덱스 설정 (첫 열 기준)
     df.set_index(df.columns[0], inplace=True)
@@ -535,9 +587,8 @@ with tab2:
                                 st.warning(f"이미지 업로드 실패 (분석은 계속 진행): {e}")
 
                     try:
-                        # 2. Gemini 분석
-                        df, footer_text = parse_image_with_gemini(file_bytes, model_name)
-                        policy_data = PolicyData(name=input_agency_name, color_hex=input_agency_color, df=df, footer_text=footer_text)
+                        # 2. Gemini 분석 (V2 함수 사용)
+                        policy_data = parse_image_with_gemini_v2(file_bytes, input_agency_name, input_agency_color, gemini_api_key, model_name)
                         
                         # 3. DB에 로그 저장 (policy_uploads 테이블)
                         if supabase_url and supabase_key and image_url:

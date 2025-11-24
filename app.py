@@ -35,9 +35,9 @@ with st.sidebar:
     
     # 모델 목록 가져오기 및 드롭다운 구성
     # 모델 목록 가져오기 및 드롭다운 구성
-    # gemini-1.5-flash를 무조건 기본값(첫번째)으로 설정
-    base_models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro-vision"]
-    model_options = ["gemini-1.5-flash"] # 시작은 flash로
+    # gemini-2.5-flash를 무조건 기본값(첫번째)으로 설정
+    base_models = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro-vision"]
+    model_options = ["gemini-2.5-flash"] # 시작은 flash로
     
     try:
         if gemini_api_key:

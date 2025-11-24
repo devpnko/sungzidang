@@ -16,20 +16,26 @@ with st.sidebar:
     st.header("🔐 서버 설정")
     
     # 기본값 설정 (Secrets에서 가져오기)
-    # 로컬에서는 .streamlit/secrets.toml 파일에서 가져오고,
-    # 배포 환경(Streamlit Cloud)에서는 Settings > Secrets에서 가져옵니다.
-    default_gemini_key = st.secrets.get("GEMINI_API_KEY", "")
-    default_supabase_url = st.secrets.get("SUPABASE_URL", "")
-    default_supabase_key = st.secrets.get("SUPABASE_KEY", "")
+    gemini_api_key = st.secrets.get("GEMINI_API_KEY", "")
+    supabase_url = st.secrets.get("SUPABASE_URL", "")
+    supabase_key = st.secrets.get("SUPABASE_KEY", "")
 
-    gemini_api_key = st.text_input("Gemini API Key", value=default_gemini_key, type="password")
-    supabase_url = st.text_input("Supabase Project URL", value=default_supabase_url)
-    supabase_key = st.text_input("Supabase Anon Key", value=default_supabase_key, type="password")
+    # Secrets가 있으면 입력창 숨김, 없으면 입력창 표시
+    if gemini_api_key and supabase_url and supabase_key:
+        st.success("✅ 서버 설정이 완료되었습니다.")
+    else:
+        if not gemini_api_key:
+            gemini_api_key = st.text_input("Gemini API Key", type="password")
+        if not supabase_url:
+            supabase_url = st.text_input("Supabase Project URL")
+        if not supabase_key:
+            supabase_key = st.text_input("Supabase Anon Key", type="password")
     
     st.divider()
     
     # 모델 목록 가져오기 및 드롭다운 구성
-    model_options = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro-vision"] # 기본 목록
+    # gemini-1.5-flash를 가장 앞에 배치 (기본값)
+    model_options = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro-vision"]
     try:
         if gemini_api_key:
             genai.configure(api_key=gemini_api_key)

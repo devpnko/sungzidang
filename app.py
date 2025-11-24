@@ -34,24 +34,34 @@ with st.sidebar:
     st.divider()
     
     # 모델 목록 가져오기 및 드롭다운 구성
-    # gemini-1.5-flash를 가장 앞에 배치 (기본값)
-    model_options = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro-vision"]
+    # 모델 목록 가져오기 및 드롭다운 구성
+    # gemini-1.5-flash를 무조건 기본값(첫번째)으로 설정
+    base_models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro-vision"]
+    model_options = ["gemini-1.5-flash"] # 시작은 flash로
+    
     try:
         if gemini_api_key:
             genai.configure(api_key=gemini_api_key)
             # API에서 실제 사용 가능한 모델 리스트 가져오기
             fetched_models = [m.name.replace("models/", "") for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-            if fetched_models:
-                model_options = fetched_models
+            
+            # fetched_models에 있는 것들을 추가하되, 중복 제거
+            for m in fetched_models:
+                if m not in model_options:
+                    model_options.append(m)
+            
+            # 만약 API 호출 실패했거나 목록이 비었으면 기본 목록 사용
+            if len(model_options) == 1: # flash만 있는 경우
+                 for m in base_models:
+                     if m not in model_options:
+                         model_options.append(m)
+                         
     except Exception:
-        pass # API 키 오류시 기본 목록 사용
+        # API 키 오류시 기본 목록 사용
+        model_options = base_models
 
-    # gemini-1.5-flash를 기본값으로 선택 (없으면 첫번째)
-    default_index = 0
-    if "gemini-1.5-flash" in model_options:
-        default_index = model_options.index("gemini-1.5-flash")
-        
-    model_name = st.selectbox("Gemini 모델 선택", model_options, index=default_index)
+    # gemini-1.5-flash가 항상 0번 인덱스에 있으므로 index=0
+    model_name = st.selectbox("Gemini 모델 선택", model_options, index=0)
 
     st.divider()
     margin_default = st.number_input("기본 마진 설정 (단위:만원)", value=0)

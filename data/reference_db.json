@@ -1,0 +1,2072 @@
+{
+  "models": [
+    {
+      "name": "갤럭시 A17 LTE",
+      "codes": [
+        "SM-A175NK",
+        "SM-A175N"
+      ]
+    },
+    {
+      "name": "갤럭시 S25 FE 5G",
+      "codes": [
+        "SM-S731NK",
+        "SM-S731N"
+      ]
+    },
+    {
+      "name": "갤럭시 퀀텀6",
+      "codes": [
+        "SM-A566S"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 폴드7 1TB",
+      "codes": [
+        "SM-F966NK1T",
+        "SM-F966N1T",
+        "SM-F966N_1T"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 폴드7 256GB",
+      "codes": [
+        "SM-F966NK",
+        "SM-F966N256",
+        "SM-F966N"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 폴드7 512GB",
+      "codes": [
+        "SM-F966NK512",
+        "SM-F966N512",
+        "SM-F966N_512G"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 플립7 256GB",
+      "codes": [
+        "SM-F766N",
+        "SM-F766N256",
+        "SM-F766NK"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 플립7 512GB",
+      "codes": [
+        "SM-F766N_512G",
+        "SM-F766N512",
+        "SM-F766NK512"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 플립7 FE",
+      "codes": [
+        "SM-F761_256GB",
+        "SM-F761NK",
+        "SM-F761N256"
+      ]
+    },
+    {
+      "name": "갤럭시 와이드 8",
+      "codes": [
+        "SM-M166S"
+      ]
+    },
+    {
+      "name": "갤럭시 A36 5G",
+      "codes": [
+        "SM-A366N",
+        "SM-A366NK"
+      ]
+    },
+    {
+      "name": "갤럭시 S25  엣지 256GB",
+      "codes": [
+        "SM-S937N",
+        "SM-S937N256",
+        "SM-S937NK"
+      ]
+    },
+    {
+      "name": "갤럭시 S25 5G 256GB",
+      "codes": [
+        "SM-S931N",
+        "SM-S931NK",
+        "SM-S931N256"
+      ]
+    },
+    {
+      "name": "갤럭시 S25 엣지 512GB",
+      "codes": [
+        "SM-S937NK512",
+        "SM-S937N512"
+      ]
+    },
+    {
+      "name": "갤럭시 S25 5G 512GB",
+      "codes": [
+        "SM-S931N_512G",
+        "SM-S931NK512",
+        "SM-S931N512"
+      ]
+    },
+    {
+      "name": "갤럭시 S25 Ultra 5G 256GB",
+      "codes": [
+        "SM-S938N256",
+        "SM-S938N",
+        "SM-S938NK"
+      ]
+    },
+    {
+      "name": "갤럭시 S25 Ultra 5G 1TB",
+      "codes": [
+        "SM-S938NK1T",
+        "SM-S938N1T",
+        "SM-S938N_1T"
+      ]
+    },
+    {
+      "name": "갤럭시 S25 Ultra 5G 512GB",
+      "codes": [
+        "SM-S938N_512G",
+        "SM-S938NK512",
+        "SM-S938N512"
+      ]
+    },
+    {
+      "name": "갤럭시 S25+ 5G 256GB",
+      "codes": [
+        "SM-S936NK",
+        "SM-S936N",
+        "SM-S936N256"
+      ]
+    },
+    {
+      "name": "갤럭시 S25+ 5G 512GB",
+      "codes": [
+        "SM-S936NK512",
+        "SM-S936N512",
+        "SM-S936N_512G"
+      ]
+    },
+    {
+      "name": "갤럭시 A16 LTE",
+      "codes": [
+        "SM-A165N",
+        "SM-A165NK"
+      ]
+    },
+    {
+      "name": "갤럭시 S24 FE 5G",
+      "codes": [
+        "SM-S721NK",
+        "SM-S721N"
+      ]
+    },
+    {
+      "name": "갤럭시 퀀텀5",
+      "codes": [
+        "SM-A556S"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 폴드 스페셜 에디션",
+      "codes": [
+        "SM-F958N",
+        "SM-F958N0"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 폴드6 5G 1TB",
+      "codes": [
+        "SM-F956N_1T",
+        "SM-F956NK1T"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 폴드6 5G 256GB",
+      "codes": [
+        "SM-F956N256",
+        "SM-F956NK",
+        "SM-F956N"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 폴드6 5G 512GB",
+      "codes": [
+        "SM-F956N512",
+        "SM-F956N_512G",
+        "SM-F956NK512"
+      ]
+    },
+    {
+      "name": "갤럭시 Z플립6 5G 256GB",
+      "codes": [
+        "SM-F741N256",
+        "SM-F741N",
+        "SM-F741NK"
+      ]
+    },
+    {
+      "name": "갤럭시 Z플립6 5G 512GB",
+      "codes": [
+        "SM-F741N_512G",
+        "SM-F741N512",
+        "SM-F741NK512"
+      ]
+    },
+    {
+      "name": "갤럭시 와이드7 5G",
+      "codes": [
+        "SM-M156S"
+      ]
+    },
+    {
+      "name": "갤럭시 A35 5G",
+      "codes": [
+        "SM-A356NK",
+        "SM-A356N"
+      ]
+    },
+    {
+      "name": "갤럭시 A15 128GB",
+      "codes": [
+        "SM-A155NK",
+        "SM-A155N"
+      ]
+    },
+    {
+      "name": "갤럭시 S24 5G 256GB",
+      "codes": [
+        "SM-S921N256",
+        "SM-S921N",
+        "SM-S921NK"
+      ]
+    },
+    {
+      "name": "갤럭시 S24 5G 512GB",
+      "codes": [
+        "SM-S921NK512",
+        "SM-S921N512",
+        "SM-S921N_512G"
+      ]
+    },
+    {
+      "name": "갤럭시 S24 Ultra 5G 256GB",
+      "codes": [
+        "SM-S928N",
+        "SM-S928NK",
+        "SM-S928N256"
+      ]
+    },
+    {
+      "name": "갤럭시 S24 Ultra 5G 512GB",
+      "codes": [
+        "SM-S928NK512",
+        "SM-S928N_512G",
+        "SM-S928N512"
+      ]
+    },
+    {
+      "name": "갤럭시 S24+ 5G 256GB",
+      "codes": [
+        "SM-S926N256",
+        "SM-S926N",
+        "SM-S926NK"
+      ]
+    },
+    {
+      "name": "갤럭시 S24+ 5G 512GB",
+      "codes": [
+        "SM-S926NK512",
+        "SM-S926N512",
+        "SM-S926N_512G"
+      ]
+    },
+    {
+      "name": "갤럭시 A25 5G",
+      "codes": [
+        "SM-A256N",
+        "SM-A256NK"
+      ]
+    },
+    {
+      "name": "갤럭시 S23 FE 5G",
+      "codes": [
+        "SM-S711NK",
+        "SM-S711N"
+      ]
+    },
+    {
+      "name": "갤럭시 Z폴드5 5G 256GB",
+      "codes": [
+        "SM-F946N256",
+        "SM-F946N",
+        "SM-F946NK"
+      ]
+    },
+    {
+      "name": "갤럭시 Z폴드5 5G 512GB",
+      "codes": [
+        "SM-F946N_512G",
+        "SM-F946N512",
+        "SM-F946NK512"
+      ]
+    },
+    {
+      "name": "갤럭시 Z플립5 5G 256GB",
+      "codes": [
+        "SM-F731N256",
+        "SM-F731NK",
+        "SM-F731N"
+      ]
+    },
+    {
+      "name": "갤럭시 Z플립5 5G 512GB",
+      "codes": [
+        "SM-F731N512",
+        "SM-F731NK512",
+        "SM-F731N_512G"
+      ]
+    },
+    {
+      "name": "갤럭시 퀀텀4",
+      "codes": [
+        "SM-A546S"
+      ]
+    },
+    {
+      "name": "갤럭시 A24 LTE",
+      "codes": [
+        "SM-A245N",
+        "SM-A245NK"
+      ]
+    },
+    {
+      "name": "갤럭시 A34 5G",
+      "codes": [
+        "SM-A346N",
+        "SM-A346NK"
+      ]
+    },
+    {
+      "name": "갤럭시 S23 5G 256GB",
+      "codes": [
+        "SM-S911N",
+        "SM-S911NK"
+      ]
+    },
+    {
+      "name": "갤럭시 S23 5G 512GB",
+      "codes": [
+        "SM-S911N_512G",
+        "SM-S911N512",
+        "SM-S911NK512"
+      ]
+    },
+    {
+      "name": "갤럭시 S23 5G 스타벅스 에디션_256G",
+      "codes": [
+        "SM-S911N_STB"
+      ]
+    },
+    {
+      "name": "갤럭시 S23 5G 스타벅스 에디션_512G",
+      "codes": [
+        "SM-S911N_STB_512G"
+      ]
+    },
+    {
+      "name": "갤럭시 S23 Ultra 5G 256GB",
+      "codes": [
+        "SM-S918N",
+        "SM-S918NK"
+      ]
+    },
+    {
+      "name": "갤럭시 S23 Ultra 5G 512GB",
+      "codes": [
+        "SM-S918N_512G",
+        "SM-S918N512",
+        "SM-S918NK512"
+      ]
+    },
+    {
+      "name": "갤럭시 S23 Ultra 5G 스타벅스 에디션_256G",
+      "codes": [
+        "SM-S918N_STB"
+      ]
+    },
+    {
+      "name": "갤럭시 S23 Ultra 5G 스타벅스 에디션_512G",
+      "codes": [
+        "SM-S918N_STB_512G"
+      ]
+    },
+    {
+      "name": "갤럭시 S23+ 5G 512GB",
+      "codes": [
+        "SM-S916N_512G",
+        "SM-S916N512",
+        "SM-S916NK512"
+      ]
+    },
+    {
+      "name": "갤럭시 S23+ 5G 256GB",
+      "codes": [
+        "SM-S916N",
+        "SM-S916NK"
+      ]
+    },
+    {
+      "name": "ZEM 꾸러기 포켓몬 에디션 ",
+      "codes": [
+        "SM-G525N_ZEM_W"
+      ]
+    },
+    {
+      "name": "갤럭시 와이드6",
+      "codes": [
+        "SM-A136S"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 폴드4 256GB 5G",
+      "codes": [
+        "SM-F936NE",
+        "SM-F936NK",
+        "SM-F936N"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 폴드4 512GB 5G",
+      "codes": [
+        "SM-F936N512GE",
+        "SM-F936N512",
+        "SM-F936NK512"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 플립4 256GB 5G",
+      "codes": [
+        "SM-F721N",
+        "SM-F721NK"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 플립4 512GB 5G",
+      "codes": [
+        "SM-F721N512",
+        "SM-F721N512GA",
+        "SM-F721NK512"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 플립4 Santa Maria Novella 아이리스 에디션",
+      "codes": [
+        "SM-F721N_SML_P"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 플립4 white edition",
+      "codes": [
+        "SM-F721N_GZ"
+      ]
+    },
+    {
+      "name": "갤럭시 A33 5G",
+      "codes": [
+        "SM-A336N",
+        "SM-A336NK"
+      ]
+    },
+    {
+      "name": "갤럭시 A13",
+      "codes": [
+        "SM-A135NK",
+        "SM-A135N"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 플립3 Pokemon edition",
+      "codes": [
+        "SM-F711N-PK",
+        "SM-F711N_POKEMON",
+        "SM-F711NK_PIKA"
+      ]
+    },
+    {
+      "name": "갤럭시 퀀텀3 5G",
+      "codes": [
+        "SM-M536S"
+      ]
+    },
+    {
+      "name": "갤럭시 A23",
+      "codes": [
+        "SM-A235N",
+        "SM-A235NK"
+      ]
+    },
+    {
+      "name": "갤럭시 A53 5G",
+      "codes": [
+        "SM-A536N",
+        "SM-A536NK"
+      ]
+    },
+    {
+      "name": "갤럭시 S22",
+      "codes": [
+        "SM-S901N",
+        "SM-S901NK"
+      ]
+    },
+    {
+      "name": "갤럭시 S22 Ultra 256GB",
+      "codes": [
+        "SM-S908N",
+        "SM-S908N_256G",
+        "SM-S908NK"
+      ]
+    },
+    {
+      "name": "갤럭시 S22 Ultra 512GB",
+      "codes": [
+        "SM-S908N_512G",
+        "SM-S908NK512",
+        "SM-S908N512"
+      ]
+    },
+    {
+      "name": "갤럭시 S22+",
+      "codes": [
+        "SM-S906NK",
+        "SM-S906N"
+      ]
+    },
+    {
+      "name": "ZEM 꾸러기 폰",
+      "codes": [
+        "SM-G525N_ZEM"
+      ]
+    },
+    {
+      "name": "갤럭시 XCover 5",
+      "codes": [
+        "SM-G525N",
+        "SM-G525NK"
+      ]
+    },
+    {
+      "name": "갤럭시 A12 열공폰",
+      "codes": [
+        "SM-A125N_STUDY"
+      ]
+    },
+    {
+      "name": "갤럭시 와이드 5(SK 전용)",
+      "codes": [
+        "SM-E426S"
+      ]
+    },
+    {
+      "name": "갤럭시 A52s 5G",
+      "codes": [
+        "SM-A528N",
+        "SM-A528NK"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 폴드3 5G 256GB",
+      "codes": [
+        "SM-F926NK",
+        "SM-F926N",
+        "SM-F926N_256GB"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 플립3 5G",
+      "codes": [
+        "SM-F711N",
+        "SM-F711N_256GB",
+        "SM-F711NK"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 폴드3 5G 512GB",
+      "codes": [
+        "SM-F926N512",
+        "SM-F926NK512",
+        "SM-F926N_512GB"
+      ]
+    },
+    {
+      "name": "갤럭시 A12 VIVA 트롯전국체전 editon",
+      "codes": [
+        "SM-A125N_VIVA"
+      ]
+    },
+    {
+      "name": "갤럭시 퀀텀2",
+      "codes": [
+        "SM-A826S"
+      ]
+    },
+    {
+      "name": "갤럭시 폴더2(2021)",
+      "codes": [
+        "SM-G160N2021",
+        "SM-G160N_2021",
+        "SM-G160NII"
+      ]
+    },
+    {
+      "name": "갤럭시 A32",
+      "codes": [
+        "SM-A325N_64G",
+        "SM-A325N",
+        "SM-A325NK"
+      ]
+    },
+    {
+      "name": "갤럭시 A42 5G",
+      "codes": [
+        "SM-A426N",
+        "SM-A426N_128G",
+        "SM-A426NK"
+      ]
+    },
+    {
+      "name": "갤럭시 A12",
+      "codes": [
+        "SM-A125N_32GB",
+        "SM-A125N",
+        "SM-A125NK"
+      ]
+    },
+    {
+      "name": "갤럭시 S21 5G ",
+      "codes": [
+        "SM-G991N_256GB",
+        "SM-G991N",
+        "SM-G991NK"
+      ]
+    },
+    {
+      "name": "갤럭시 S21 Ultra 5G 256GB",
+      "codes": [
+        "SM-G998N_256GB",
+        "SM-G998NK256"
+      ]
+    },
+    {
+      "name": "갤럭시 S21 Ultra 5G 512GB",
+      "codes": [
+        "SM-G998NK512",
+        "SM-G998N_512GB"
+      ]
+    },
+    {
+      "name": "갤럭시 S21+ 5G ",
+      "codes": [
+        "SM-G996N_256GB",
+        "SM-G996N",
+        "SM-G996NK"
+      ]
+    },
+    {
+      "name": "갤럭시 A21s_ZEM",
+      "codes": [
+        "SM-A217N_ZEM"
+      ]
+    },
+    {
+      "name": "갤럭시 S20 FE 5G",
+      "codes": [
+        "SM-G781N",
+        "SM-G781NK",
+        "SM-G781N_128GB"
+      ]
+    },
+    {
+      "name": "갤럭시 A21s VIVA 트롯 Edition",
+      "codes": [
+        "SM-A217N_VIVA"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 폴드2 5G",
+      "codes": [
+        "SM-F916NK",
+        "SM-F916N_256G",
+        "SM-F916N"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 플립2 5G",
+      "codes": [
+        "SM-F707N",
+        "SM-F707NK",
+        "SM-F707N_256G"
+      ]
+    },
+    {
+      "name": "갤럭시 노트20 5G 256GB",
+      "codes": [
+        "SM-N981NK",
+        "SM-N981_256GB",
+        "SM-N981N"
+      ]
+    },
+    {
+      "name": "갤럭시 노트20 Ultra 5G 256GB",
+      "codes": [
+        "SM-N986_256GB",
+        "SM-N986NK",
+        "SM-N986N"
+      ]
+    },
+    {
+      "name": "갤럭시 A21 s",
+      "codes": [
+        "SM-A217NK",
+        "SM-A217N"
+      ]
+    },
+    {
+      "name": "갤럭시 S20+ BTS Edition",
+      "codes": [
+        "SM-G986N_BTS",
+        "SM-G986N_256GB_BTS",
+        "SM-G986NKBTS"
+      ]
+    },
+    {
+      "name": "갤럭시 A Quantum",
+      "codes": [
+        "SM-A716_128GB"
+      ]
+    },
+    {
+      "name": "갤럭시 A31",
+      "codes": [
+        "SM-A315NK",
+        "SM-A315N",
+        "SM-A315N_64GB"
+      ]
+    },
+    {
+      "name": "갤럭시 A51 5G",
+      "codes": [
+        "SM-A516N",
+        "SM-A516N_128GB",
+        "SM-A516NK"
+      ]
+    },
+    {
+      "name": "갤럭시 S20 5G",
+      "codes": [
+        "SM-G981N",
+        "SM-G981NK",
+        "SM-G981N_128G"
+      ]
+    },
+    {
+      "name": "갤럭시 S20 Ultra 5G",
+      "codes": [
+        "SM-G988NK",
+        "SM-G988N",
+        "SM-G988N_256G"
+      ]
+    },
+    {
+      "name": "갤럭시 S20+ 5G",
+      "codes": [
+        "SM-G986N",
+        "SM-G986NK",
+        "SM-G986N_256G"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 플립",
+      "codes": [
+        "SM-F700NK",
+        "SM-F700N"
+      ]
+    },
+    {
+      "name": "갤럭시 A10e",
+      "codes": [
+        "SM-A102N",
+        "SM-A102N0"
+      ]
+    },
+    {
+      "name": "갤럭시 와이드4 비바에디션",
+      "codes": [
+        "SM-A205S_VIVA"
+      ]
+    },
+    {
+      "name": "갤럭시 폴드 5G",
+      "codes": [
+        "SM-F907NK",
+        "SM-F907N_512G",
+        "SM-F907N"
+      ]
+    },
+    {
+      "name": "갤럭시 A90 5G",
+      "codes": [
+        "SM-A908N",
+        "SM-A908NK"
+      ]
+    },
+    {
+      "name": "갤럭시 5G 노트 10+ 512G",
+      "codes": [
+        "SM-N976_512G",
+        "SM-N976NK512"
+      ]
+    },
+    {
+      "name": "갤럭시 5G 노트10 256G",
+      "codes": [
+        "SM-N971_256G",
+        "SM-N971NK"
+      ]
+    },
+    {
+      "name": "갤럭시 5G 노트10+ 256G",
+      "codes": [
+        "SM-N976_256G",
+        "SM-N976NK"
+      ]
+    },
+    {
+      "name": "갤럭시 A40",
+      "codes": [
+        "SM-A405N"
+      ]
+    },
+    {
+      "name": "갤럭시폴더2 LTE 32G",
+      "codes": [
+        "SM-G160N_32GB",
+        "SM-G160N_32G"
+      ]
+    },
+    {
+      "name": "갤럭시 A50 2019",
+      "codes": [
+        "SM-A505NK",
+        "SM-A505N"
+      ]
+    },
+    {
+      "name": "갤럭시 와이드4",
+      "codes": [
+        "SM-A205S"
+      ]
+    },
+    {
+      "name": "갤럭시 A30 2019",
+      "codes": [
+        "SM-A305N",
+        "SM-A305NK"
+      ]
+    },
+    {
+      "name": "갤럭시 S9 64G",
+      "codes": [
+        "SM-G960N_64G",
+        "SM-G960NK",
+        "SM-G960N"
+      ]
+    },
+    {
+      "name": "갤럭시 S9+ 256G",
+      "codes": [
+        "SM-G965N256",
+        "SM-G965N_256G",
+        "SM-G965NK256"
+      ]
+    },
+    {
+      "name": "갤럭시 S9+ 64G",
+      "codes": [
+        "SM-G965N",
+        "SM-G965NK",
+        "SM-G965N_64G"
+      ]
+    },
+    {
+      "name": "갤럭시 On 7 프라임",
+      "codes": [
+        "SM-G611S",
+        "SM-G611K"
+      ]
+    },
+    {
+      "name": "아이폰 17 256GB",
+      "codes": [
+        "IP17_256G",
+        "AIP17-256",
+        "UIP17-256"
+      ]
+    },
+    {
+      "name": "아이폰 17 512GB",
+      "codes": [
+        "IP17_512G",
+        "UIP17-512",
+        "AIP17-512"
+      ]
+    },
+    {
+      "name": "아이폰 17 Pro 1TB",
+      "codes": [
+        "UIP17PR-1T",
+        "AIP17P-1T",
+        "IP17P_1T"
+      ]
+    },
+    {
+      "name": "아이폰 17 Pro Max 1TB",
+      "codes": [
+        "AIP17PM-1T",
+        "UIP17PM-1T",
+        "IP17PM_1T"
+      ]
+    },
+    {
+      "name": "아이폰 17 Pro 256GB",
+      "codes": [
+        "AIP17P-256",
+        "IP17P_256G",
+        "UIP17PR-256"
+      ]
+    },
+    {
+      "name": "아이폰 17 Pro 512GB",
+      "codes": [
+        "AIP17P-512",
+        "UIP17PR-512",
+        "IP17P_512G"
+      ]
+    },
+    {
+      "name": "아이폰 17 Pro Max 256GB",
+      "codes": [
+        "AIP17PM-256",
+        "UIP17PM-256",
+        "IP17PM_256G"
+      ]
+    },
+    {
+      "name": "아이폰 17 Pro Max 2TB",
+      "codes": [
+        "AIP17PM-2T",
+        "IP17PM_2T",
+        "UIP17PM-2T"
+      ]
+    },
+    {
+      "name": "아이폰 17 Pro Max 512GB",
+      "codes": [
+        "AIP17PM-512",
+        "IP17PM_512G",
+        "UIP17PM-512"
+      ]
+    },
+    {
+      "name": "아이폰 Air 1TB",
+      "codes": [
+        "UIPA-1T",
+        "AIPA-1T",
+        "IPA_1T"
+      ]
+    },
+    {
+      "name": "아이폰 Air 256GB",
+      "codes": [
+        "AIPA-256",
+        "UIPA-256",
+        "IPA_256G"
+      ]
+    },
+    {
+      "name": "아이폰 Air 512GB",
+      "codes": [
+        "IPA_512G",
+        "AIPA-512",
+        "UIPA-512"
+      ]
+    },
+    {
+      "name": "아이폰 16e 256GB",
+      "codes": [
+        "IP16E_256GB",
+        "UIP16E-256",
+        "AIP16E-256"
+      ]
+    },
+    {
+      "name": "아이폰 16e 128GB",
+      "codes": [
+        "IP16E_128GB",
+        "AIP16E-128",
+        "UIP16E-128"
+      ]
+    },
+    {
+      "name": "아이폰 16e 512GB",
+      "codes": [
+        "UIP16E-512",
+        "AIP16E-512",
+        "IP16E_512GB"
+      ]
+    },
+    {
+      "name": "아이폰 16 128GB",
+      "codes": [
+        "AIP16-128",
+        "IP16_128GB",
+        "UIP16-128"
+      ]
+    },
+    {
+      "name": "아이폰 16 256GB",
+      "codes": [
+        "IP16_256GB",
+        "UIP16-256",
+        "AIP16-256"
+      ]
+    },
+    {
+      "name": "아이폰 16 512GB",
+      "codes": [
+        "IP16_512GB",
+        "AIP16-512",
+        "UIP16-512"
+      ]
+    },
+    {
+      "name": "아이폰 16 Pro 128GB",
+      "codes": [
+        "IPP16_128GB",
+        "AIP16P-128",
+        "UIP16PR-128"
+      ]
+    },
+    {
+      "name": "아이폰 16 Pro 1T",
+      "codes": [
+        "UIP16PR-1T",
+        "AIP16P-1T",
+        "IPP16_1T"
+      ]
+    },
+    {
+      "name": "아이폰 16 Pro 256GB",
+      "codes": [
+        "IPP16_256GB",
+        "AIP16P-256",
+        "UIP16PR-256"
+      ]
+    },
+    {
+      "name": "아이폰 16 Pro 512GB",
+      "codes": [
+        "UIP16PR-512",
+        "IPP16_512GB",
+        "AIP16P-512"
+      ]
+    },
+    {
+      "name": "아이폰 16 Pro Max 1T",
+      "codes": [
+        "AIP16PM-1T",
+        "UIP16PM-1T",
+        "IPPM16_1T"
+      ]
+    },
+    {
+      "name": "아이폰 16 Pro Max 256GB",
+      "codes": [
+        "IPPM16_256GB",
+        "UIP16PM-256",
+        "AIP16PM-256"
+      ]
+    },
+    {
+      "name": "아이폰 16 Pro Max 512GB",
+      "codes": [
+        "AIP16PM-512",
+        "UIP16PM-512",
+        "IPPM16_512GB"
+      ]
+    },
+    {
+      "name": "아이폰 16 플러스 128GB",
+      "codes": [
+        "UIP16PL-128",
+        "IPPL16_128GB",
+        "AIP16PS-128"
+      ]
+    },
+    {
+      "name": "아이폰 16 플러스 256GB",
+      "codes": [
+        "UIP16PL-256",
+        "AIP16PS-256",
+        "IPPL16_256GB"
+      ]
+    },
+    {
+      "name": "아이폰 16 플러스 512GB",
+      "codes": [
+        "UIP16PL-512",
+        "AIP16PS-512",
+        "IPPL16_512GB"
+      ]
+    },
+    {
+      "name": "아이폰 15 128GB",
+      "codes": [
+        "A3090-128",
+        "AIP15-128",
+        "IP15_128GB"
+      ]
+    },
+    {
+      "name": "아이폰 15 256GB",
+      "codes": [
+        "A3090-256",
+        "AIP15-256",
+        "IP15_256GB"
+      ]
+    },
+    {
+      "name": "아이폰 15 512GB",
+      "codes": [
+        "A3090-512",
+        "IP15_512GB",
+        "AIP15-512"
+      ]
+    },
+    {
+      "name": "아이폰 15 Pro 128GB",
+      "codes": [
+        "AIP15P-128",
+        "A3102-128",
+        "IPP15_128GB"
+      ]
+    },
+    {
+      "name": "아이폰 15 Pro 1T",
+      "codes": [
+        "AIP15P-1T",
+        "IPP15_1TB",
+        "A3102-1T"
+      ]
+    },
+    {
+      "name": "아이폰 15 Pro 256GB",
+      "codes": [
+        "AIP15P-256",
+        "A3102-256",
+        "IPP15_256GB"
+      ]
+    },
+    {
+      "name": "아이폰 15 Pro 512GB",
+      "codes": [
+        "IPP15_512GB",
+        "A3102-512",
+        "AIP15P-512"
+      ]
+    },
+    {
+      "name": "아이폰 15 Pro Max 1T",
+      "codes": [
+        "AIP15PM-1T",
+        "IPPM15_1TB",
+        "A3106-1T"
+      ]
+    },
+    {
+      "name": "아이폰 15 Pro Max 256GB",
+      "codes": [
+        "IPPM15_256GB",
+        "A3106-256",
+        "AIP15PM-256"
+      ]
+    },
+    {
+      "name": "아이폰 15 Pro Max 512GB",
+      "codes": [
+        "IPPM15_512GB",
+        "AIP15PM-512",
+        "A3106-512"
+      ]
+    },
+    {
+      "name": "아이폰 15 플러스 128GB",
+      "codes": [
+        "AIP15PS-128",
+        "IPPL15_128GB",
+        "A3094-128"
+      ]
+    },
+    {
+      "name": "아이폰 15 플러스 512GB",
+      "codes": [
+        "A3094-512",
+        "AIP15PS-512",
+        "IPPL15_512GB"
+      ]
+    },
+    {
+      "name": "아이폰 15 플러스 256GB",
+      "codes": [
+        "A3094-256",
+        "IPPL15_256GB",
+        "AIP15PS-256"
+      ]
+    },
+    {
+      "name": "아이폰 14 128GB",
+      "codes": [
+        "IP14_128GB",
+        "A2882-128",
+        "AIP14-128"
+      ]
+    },
+    {
+      "name": "아이폰 14 256GB",
+      "codes": [
+        "AIP14-256",
+        "A2882-256",
+        "IP14_256GB"
+      ]
+    },
+    {
+      "name": "아이폰 14 512GB",
+      "codes": [
+        "AIP14-512",
+        "A2882-512",
+        "IP14_512GB"
+      ]
+    },
+    {
+      "name": "아이폰 14 Pro 128GB",
+      "codes": [
+        "AIP14P-128",
+        "IPP14_128GB",
+        "A2890-128"
+      ]
+    },
+    {
+      "name": "아이폰 14 Pro 1TB",
+      "codes": [
+        "AIP14P-1T",
+        "A2890-1T",
+        "IPP14_1TB"
+      ]
+    },
+    {
+      "name": "아이폰 14 Pro 256GB",
+      "codes": [
+        "IPP14_256GB",
+        "AIP14P-256",
+        "A2890-256"
+      ]
+    },
+    {
+      "name": "아이폰 14 Pro 512GB",
+      "codes": [
+        "AIP14P-512",
+        "A2890-512",
+        "IPP14_512GB"
+      ]
+    },
+    {
+      "name": "아이폰 14 Pro Max  256GB",
+      "codes": [
+        "A2894-256",
+        "IPPM14_256GB",
+        "AIP14PM-256"
+      ]
+    },
+    {
+      "name": "아이폰 14 Pro Max 128GB",
+      "codes": [
+        "A2894-128",
+        "IPPM14_128GB",
+        "AIP14PM-128"
+      ]
+    },
+    {
+      "name": "아이폰 14 Pro Max 1TB",
+      "codes": [
+        "IPPM14_1TB",
+        "AIP14PM-1T",
+        "A2894-1T"
+      ]
+    },
+    {
+      "name": "아이폰 14 Pro Max 512GB",
+      "codes": [
+        "IPPM14_512GB",
+        "A2894-512",
+        "AIP14PM-512"
+      ]
+    },
+    {
+      "name": "아이폰 14 플러스 128GB",
+      "codes": [
+        "IPPL14_128GB",
+        "AIP14PS-128",
+        "A2886-128"
+      ]
+    },
+    {
+      "name": "아이폰 14 플러스 256GB",
+      "codes": [
+        "A2886-256",
+        "IPPL14_256GB",
+        "AIP14PS-256"
+      ]
+    },
+    {
+      "name": "아이폰 14 플러스 512GB",
+      "codes": [
+        "AIP14PS-512",
+        "IPPL14_512GB",
+        "A2886-512"
+      ]
+    },
+    {
+      "name": "아이폰 SE 3 128GB",
+      "codes": [
+        "IPSE22_128GB",
+        "A2783-128",
+        "AIPSE3-128"
+      ]
+    },
+    {
+      "name": "아이폰 SE 3 256GB",
+      "codes": [
+        "IPSE22_256GB",
+        "A2783-256",
+        "AIPSE3-256"
+      ]
+    },
+    {
+      "name": "아이폰 SE 3 64GB",
+      "codes": [
+        "A2783-64",
+        "AIPSE3-64",
+        "IPSE22_64GB"
+      ]
+    },
+    {
+      "name": "아이폰 13 128GB ",
+      "codes": [
+        "A2633-128",
+        "iPhone_13_128GB",
+        "AIP13-128"
+      ]
+    },
+    {
+      "name": "아이폰 13 256GB",
+      "codes": [
+        "AIP13-256",
+        "A2633-256",
+        "iPhone_13_256GB"
+      ]
+    },
+    {
+      "name": "아이폰 13 512GB",
+      "codes": [
+        "iPhone_13_512GB",
+        "A2633-512",
+        "AIP13-512"
+      ]
+    },
+    {
+      "name": "아이폰 13 mini 128GB ",
+      "codes": [
+        "iPhone_13_mini_128GB",
+        "AIP13M-128",
+        "A2628-128"
+      ]
+    },
+    {
+      "name": "아이폰 13 mini 256GB",
+      "codes": [
+        "A2628-256",
+        "iPhone_13_mini_256GB",
+        "AIP13M-256"
+      ]
+    },
+    {
+      "name": "아이폰 13 mini 512GB",
+      "codes": [
+        "A2628-512",
+        "AIP13M-512",
+        "iPhone_13_mini_512GB"
+      ]
+    },
+    {
+      "name": "아이폰 13 Pro 128GB ",
+      "codes": [
+        "A2638-128",
+        "AIP13P-128",
+        "iPhone_13_Pro_128GB"
+      ]
+    },
+    {
+      "name": "아이폰 13 Pro 1TB",
+      "codes": [
+        "AIP13P-1TB",
+        "A2638-1TB",
+        "iPhone_13_Pro_1TB"
+      ]
+    },
+    {
+      "name": "아이폰 13 Pro 256GB",
+      "codes": [
+        "iPhone_13_Pro_256GB",
+        "A2638-256",
+        "AIP13P-256"
+      ]
+    },
+    {
+      "name": "아이폰 13 Pro 512GB",
+      "codes": [
+        "iPhone_13_Pro_512GB",
+        "A2638-512",
+        "AIP13P-512"
+      ]
+    },
+    {
+      "name": "아이폰 13 Pro Max 128GB",
+      "codes": [
+        "iPhone_13_Pro_Max_128GB",
+        "AIP13PM-128",
+        "A2643-128"
+      ]
+    },
+    {
+      "name": "아이폰 13 Pro Max 1TB",
+      "codes": [
+        "A2643-1TB",
+        "AIP13PM-1TB",
+        "iPhone_13_Pro_Max_1TB"
+      ]
+    },
+    {
+      "name": "아이폰 13 Pro Max 256GB",
+      "codes": [
+        "iPhone_13_Pro_Max_256GB",
+        "A2643-256",
+        "AIP13PM-256"
+      ]
+    },
+    {
+      "name": "아이폰 13 Pro Max 512GB",
+      "codes": [
+        "AIP13PM-512",
+        "iPhone_13_Pro_Max_512GB",
+        "A2643-512"
+      ]
+    },
+    {
+      "name": "아이폰 12 mini 128GB 5G",
+      "codes": [
+        "A2399-128",
+        "IPHONE_12_MINI_128GB",
+        "AIP12M-128"
+      ]
+    },
+    {
+      "name": "아이폰 12 mini 256GB 5G",
+      "codes": [
+        "A2399-256",
+        "IPHONE_12_MINI_256GB",
+        "AIP12M-256"
+      ]
+    },
+    {
+      "name": "아이폰 12 mini 64GB 5G",
+      "codes": [
+        "A2399-64",
+        "AIP12M-64",
+        "IPHONE_12_MINI_64GB"
+      ]
+    },
+    {
+      "name": "아이폰 12 Pro Max 128GB 5G",
+      "codes": [
+        "A2411-128",
+        "IPHONE_12_PRO_MAX_128GB",
+        "AIP12PM-128"
+      ]
+    },
+    {
+      "name": "아이폰 12 Pro Max 256GB 5G",
+      "codes": [
+        "A2411-256",
+        "IPHONE_12_PRO_MAX_256GB",
+        "AIP12PM-256"
+      ]
+    },
+    {
+      "name": "아이폰 12 Pro Max 512GB 5G",
+      "codes": [
+        "AIP12PM-512",
+        "A2411-512",
+        "IPHONE_12_PRO_MAX_512GB"
+      ]
+    },
+    {
+      "name": "아이폰 12 64GB 5G",
+      "codes": [
+        "IPHONE_12_64GB",
+        "A2403-64",
+        "AIP12-64"
+      ]
+    },
+    {
+      "name": "아이폰 12 128GB 5G",
+      "codes": [
+        "IPHONE_12_128GB",
+        "AIP12-128",
+        "A2403-128"
+      ]
+    },
+    {
+      "name": "아이폰 12 256GB 5G",
+      "codes": [
+        "A2403-256",
+        "IPHONE_12_256GB",
+        "AIP12-256"
+      ]
+    },
+    {
+      "name": "아이폰 12 Pro 128GB 5G",
+      "codes": [
+        "AIP12P-128",
+        "A2407-128",
+        "IPHONE_12_PRO_128GB"
+      ]
+    },
+    {
+      "name": "아이폰 12 Pro 256GB 5G",
+      "codes": [
+        "IPHONE_12_PRO_256GB",
+        "AIP12P-256",
+        "A2407-256"
+      ]
+    },
+    {
+      "name": "아이폰 12 Pro 512GB 5G",
+      "codes": [
+        "A2407-512",
+        "IPHONE_12_PRO_512GB",
+        "AIP12P-512"
+      ]
+    },
+    {
+      "name": "아이폰 SE 2세대 128GB",
+      "codes": [
+        "IPHONE_SE_2020_128GB",
+        "AIPSE2-128",
+        "A2296-128"
+      ]
+    },
+    {
+      "name": "아이폰 SE 2세대 256GB",
+      "codes": [
+        "A2296-256",
+        "AIPSE2-256",
+        "IPHONE_SE_2020_256GB"
+      ]
+    },
+    {
+      "name": "아이폰 SE 2세대 64GB",
+      "codes": [
+        "A2296-64",
+        "AIPSE2-64",
+        "IPHONE_SE_2020_64GB"
+      ]
+    },
+    {
+      "name": "아이폰 11 128G",
+      "codes": [
+        "A2221-128",
+        "iphone11_128GB",
+        "AIP11-128"
+      ]
+    },
+    {
+      "name": "아이폰 11 64G",
+      "codes": [
+        "iphone11_64GB",
+        "A2221-64",
+        "AIP11-64"
+      ]
+    },
+    {
+      "name": "아이폰 11 256G",
+      "codes": [
+        "iphone11_256GB",
+        "AIP11-256"
+      ]
+    },
+    {
+      "name": "아이폰 11 pro 256G",
+      "codes": [
+        "iphone11_pro_256GB",
+        "A2215-256",
+        "AIP11P-256"
+      ]
+    },
+    {
+      "name": "아이폰 11 Pro 512G",
+      "codes": [
+        "A2215-512",
+        "AIP11P-512",
+        "iphone11_pro_512GB"
+      ]
+    },
+    {
+      "name": "아이폰 11 Pro 64G",
+      "codes": [
+        "iphone11_pro_64GB",
+        "AIP11P-64",
+        "A2215-64"
+      ]
+    },
+    {
+      "name": "아이폰 11 Pro MAX 256G",
+      "codes": [
+        "AIP11PM-256",
+        "A2218-256",
+        "iphone11_pro_max_256GB"
+      ]
+    },
+    {
+      "name": "아이폰 11 Pro MAX 512G",
+      "codes": [
+        "AIP11PM-512",
+        "iphone11_pro_max_512GB",
+        "A2218-512"
+      ]
+    },
+    {
+      "name": "아이폰 11 Pro MAX 64G",
+      "codes": [
+        "A2218-64",
+        "AIP11PM-64",
+        "iphone11_pro_max_64GB"
+      ]
+    },
+    {
+      "name": "LG Q52",
+      "codes": [
+        "LM-Q520N_64GB",
+        "LM-Q520NK",
+        "LM-Q520N"
+      ]
+    },
+    {
+      "name": "LG WING",
+      "codes": [
+        "LM-F100N",
+        "LM-F100NK",
+        "LM-F100N_128G"
+      ]
+    },
+    {
+      "name": "LG Q 31",
+      "codes": [
+        "LM-Q310N_32GA",
+        "LM-Q310NK",
+        "LM-Q310N"
+      ]
+    },
+    {
+      "name": "LG Q92 5G",
+      "codes": [
+        "LM-Q920N",
+        "LM-Q920NK",
+        "LM-Q920N_128GB "
+      ]
+    },
+    {
+      "name": "LG Q61",
+      "codes": [
+        "LM-Q630N",
+        "LM-Q630NK",
+        "LM-Q630N_64GB"
+      ]
+    },
+    {
+      "name": "LG Velvet",
+      "codes": [
+        "LM-G900N_128GB",
+        "LM-G900N",
+        "LM-G900NK"
+      ]
+    },
+    {
+      "name": "LG 폴더2",
+      "codes": [
+        "LM-Y120L",
+        "LM-Y120S_8GT",
+        "LM-Y120K"
+      ]
+    },
+    {
+      "name": "LG Q51",
+      "codes": [
+        "LM-Q510N",
+        "LM-Q510N_32GW",
+        "LM-Q510NK"
+      ]
+    },
+    {
+      "name": "V50S ThinQ",
+      "codes": [
+        "LM-V510NK",
+        "LM-V510N",
+        "LM-V510N_256G"
+      ]
+    },
+    {
+      "name": "LG X2 ZEM",
+      "codes": [
+        "LM-X220NJ"
+      ]
+    },
+    {
+      "name": "LG Q70",
+      "codes": [
+        "LM-Q730NK",
+        "LM-Q730N",
+        "LM-Q730N_64G"
+      ]
+    },
+    {
+      "name": "LG X2 2019",
+      "codes": [
+        "LM-X220NK",
+        "LM-X220N",
+        "LM-X220N_32G"
+      ]
+    },
+    {
+      "name": "LG X6 2019",
+      "codes": [
+        "LM-X625N_64G",
+        "LM-X625N",
+        "LM-X625NK"
+      ]
+    },
+    {
+      "name": "LG V50 ThinQ",
+      "codes": [
+        "LM-V500N",
+        "LM-V500N_128G"
+      ]
+    },
+    {
+      "name": "LG X4 2019",
+      "codes": [
+        "LM-X420NK",
+        "LM-X420N_32G",
+        "LM-X420N"
+      ]
+    },
+    {
+      "name": "LG G8 ThinQ",
+      "codes": [
+        "LM-G820N",
+        "LM-G820NK",
+        "LM-G820N_128G"
+      ]
+    },
+    {
+      "name": "LG Q9",
+      "codes": [
+        "LM-Q925S_64GA",
+        "LM-Q925L",
+        "LM-Q925K"
+      ]
+    },
+    {
+      "name": "맘편안폰S 128GB",
+      "codes": [
+        "SM-M366K-MOM"
+      ]
+    },
+    {
+      "name": "갤럭시 Jump 4 5G",
+      "codes": [
+        "SM-M366K"
+      ]
+    },
+    {
+      "name": "포차코 키즈폰",
+      "codes": [
+        "SM-A165NK-KP"
+      ]
+    },
+    {
+      "name": "KT 맘편한폰3 5G",
+      "codes": [
+        "SM-A256NK-MOM"
+      ]
+    },
+    {
+      "name": "갤럭시 S23 프리미엄 Y 에디션",
+      "codes": [
+        "SM-S911NK_PYE"
+      ]
+    },
+    {
+      "name": "갤럭시 JUMP3 5G(KT 전용)",
+      "codes": [
+        "SM-M446K"
+      ]
+    },
+    {
+      "name": "맘편한폰2 5G",
+      "codes": [
+        "SM-M336K_MOM"
+      ]
+    },
+    {
+      "name": "KT 신비 키즈폰3",
+      "codes": [
+        "SM-G525NK-KP3"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 플립4 우영우 에디션",
+      "codes": [
+        "SM-F721NK_WOO"
+      ]
+    },
+    {
+      "name": "KT 맘편한 폰",
+      "codes": [
+        "SM-A125NK_MOM"
+      ]
+    },
+    {
+      "name": "갤럭시 JUMP 2(KT 전용)",
+      "codes": [
+        "SM-M336K"
+      ]
+    },
+    {
+      "name": "갤럭시 S20 FE 2022 5G",
+      "codes": [
+        "SM-G781NK22",
+        "SM-G781N2022"
+      ]
+    },
+    {
+      "name": "KT 신비키즈폰 2",
+      "codes": [
+        "SM-G525NK-KP"
+      ]
+    },
+    {
+      "name": "KT 신비 키즈폰(3GB)",
+      "codes": [
+        "SM-A102N0-KP3GB"
+      ]
+    },
+    {
+      "name": "갤럭시 JUMP(A32 5G, KT 전용)",
+      "codes": [
+        "SM-A326K"
+      ]
+    },
+    {
+      "name": "KT신비키즈폰 ",
+      "codes": [
+        "SM-A102N0-KP"
+      ]
+    },
+    {
+      "name": "갤럭시 J4+",
+      "codes": [
+        "SM-J415N-00",
+        "SM-J415N"
+      ]
+    },
+    {
+      "name": "갤럭시 Jean2",
+      "codes": [
+        "SM-A202K"
+      ]
+    },
+    {
+      "name": "iphone 13 열공 에디션",
+      "codes": [
+        "AIP13-128WHE"
+      ]
+    },
+    {
+      "name": "아이폰 SE3 Y2K팩",
+      "codes": [
+        "AIPSE3-Y2K"
+      ]
+    },
+    {
+      "name": "아이폰 11 2022",
+      "codes": [
+        "AIP11-128_2022"
+      ]
+    },
+    {
+      "name": "LG Velvet LTE",
+      "codes": [
+        "LM-G910N0"
+      ]
+    },
+    {
+      "name": "LG Velvet(T)",
+      "codes": [
+        "TEST-002"
+      ]
+    },
+    {
+      "name": "갤럭시 버디4 5G",
+      "codes": [
+        "SM-A166L"
+      ]
+    },
+    {
+      "name": "U⁺ 키즈폰 무너에디션",
+      "codes": [
+        "SM-A165N-UM"
+      ]
+    },
+    {
+      "name": "갤럭시 버디3 5G",
+      "codes": [
+        "SM-A156L"
+      ]
+    },
+    {
+      "name": "U+키즈폰 춘식이2",
+      "codes": [
+        "SM-A245N-UC2"
+      ]
+    },
+    {
+      "name": "Z 플립5 가비지타임 장도고 에디션",
+      "codes": [
+        "SM-F731N-GT2"
+      ]
+    },
+    {
+      "name": "Z 플립5 가비지타임 지상고 에디션",
+      "codes": [
+        "SM-F731N-GT1"
+      ]
+    },
+    {
+      "name": "U+키즈폰 with 춘식이",
+      "codes": [
+        "SM-G525N-UC"
+      ]
+    },
+    {
+      "name": "갤럭시 Z 플립4 메종 키츠네 에디션",
+      "codes": [
+        "SM-F721N_MK"
+      ]
+    },
+    {
+      "name": "갤럭시 버디2 5G(LGU+ 전용)",
+      "codes": [
+        "SM-M236N"
+      ]
+    },
+    {
+      "name": "U+ Z플랜폰",
+      "codes": [
+        "SM-F711N_ZP"
+      ]
+    },
+    {
+      "name": "U+키즈폰 with 리틀카카오프렌즈",
+      "codes": [
+        "SM-G525N-UK"
+      ]
+    },
+    {
+      "name": "갤럭시 버디 5G(LG U+ 전용)",
+      "codes": [
+        "SM-A226L"
+      ]
+    },
+    {
+      "name": "U+카카오리틀프렌즈폰4",
+      "codes": [
+        "SM-A102N-KF4"
+      ]
+    },
+    {
+      "name": "카카오리틀프렌즈폰3",
+      "codes": [
+        "SM-A102-KA"
+      ]
+    },
+    {
+      "name": "U+브라보라이프폰",
+      "codes": [
+        "SM-J415N-BR"
+      ]
+    }
+  ],
+  "plans": [
+    "0 청년 37",
+    "5G 미니",
+    "5G 베이직+",
+    "5G 프리미어 레귤러",
+    "5G 프리미어 슈퍼",
+    "5G 프리미어 플러스",
+    "5GX 프리미엄(T 우주)",
+    "LTE 데이터 실속 3GB/100분\t",
+    "LTE 데이터 실속 3GB/200분\t",
+    "LTE 데이터 실속 3GB/300분",
+    "LTE 데이터 실속 3GB/60분",
+    "LTE 데이터 실속 5GB/100분",
+    "LTE 데이터 실속 5GB/60분\t",
+    "T 글로벌 1.5G",
+    "T 글로벌 2.5G",
+    "T 글로벌 퍼펙트",
+    "T 글로벌세이브",
+    "T플랜 세이브",
+    "데이터 On 비디오 플러스",
+    "유쓰 5G 미니\t",
+    "초이스 베이직(티빙/지니/밀리)",
+    "초이스 스페셜(디즈니+)",
+    "추걱요 데이터 69",
+    "컴팩트",
+    "컴팩트 플러스"
+  ]
+}

@@ -33,11 +33,14 @@ def get_random_pastel_color():
 
 # --- 데이터 구조 클래스 ---
 class PolicyData:
-    def __init__(self, name, df, footer_text, color_hex):
+    def __init__(self, name, image_bytes, color_hex):
         self.name = name
-        self.df = df
-        self.footer_text = footer_text
-        self.color_hex = color_hex # 사용자가 지정한 색상 코드
+        self.image_bytes = image_bytes  # 원본 이미지 저장 (AI 분석은 나중에)
+        self.color_hex = color_hex
+        # 분석 결과는 나중에 채워짐
+        self.df = None
+        self.footer_text = None
+        self.is_analyzed = False
 
 # --- 1. Gemini 파싱 함수 (배틀용) ---
 def parse_image_with_gemini_v2(file_bytes, agency_name, color_hex, api_key, model_name):
@@ -48,32 +51,37 @@ def parse_image_with_gemini_v2(file_bytes, agency_name, color_hex, api_key, mode
     prompt = """
     Analyze this mobile phone price sheet image very carefully.
     
-    **CRITICAL Instructions:**
-    1. Read the column headers EXACTLY as shown in the image. Pay special attention to:
-       - Distinguish between similar-looking letters (I vs J, l vs 1, O vs 0)
-       - Read each header cell individually and precisely
+    **CRITICAL Instructions for Reading Headers:**
+    1. Read column headers from LEFT to RIGHT, ONE CELL AT A TIME in exact sequential order
+    2. Pay EXTREME attention to distinguishing these letters:
+       - Letter "I" (capital i): A straight vertical line with horizontal lines at top and bottom (like "|")
+       - Letter "J" (capital j): A vertical line that curves LEFT at the bottom (like "⅃" rotated)
+       - These letters often ALTERNATE in the header row (e.g., I, J, I, J, I, J...)
+    3. Do NOT group similar letters together - read each cell individually in order
+    4. Example: If you see columns labeled "SK-I", "SK-J", "SK-I", "SK-J"
+       → Output them in that EXACT order: ["SK-I", "SK-J", "SK-I", "SK-J"]
+       → Do NOT output: ["SK-I", "SK-I", "SK-J", "SK-J"]
     
-    2. For the first column (모델명/Model Name), extract BOTH:
-       - The model code (e.g., SM-F766N, SM-S921N) - this is crucial!
-       - The Korean model name if visible
+    **For Model Names:**
+    - Extract the model CODE (e.g., SM-F766N, SM-S921N) from the first column
+    - This code is crucial for accurate identification
     
     Return JSON with two parts:
     1. "table": A list of lists representing the grid. Row 1 is headers.
-       - Row 1 should contain the EXACT header text from the image
-       - For model rows: First cell should contain the model CODE (SM-XXXX format)
+       - Row 1: EXACT header text in LEFT-TO-RIGHT order from the image
+       - For model rows: First cell must contain the model CODE (SM-XXXX format)
        - Convert all prices to integers (e.g., 45, -5). If empty, use null.
-       - DO NOT normalize model names yet - keep the original model codes
+       - DO NOT normalize model names - keep original model codes
     2. "footer": Extract all condition texts at the bottom as a single string.
     
     Structure: {"table": [[...], ...], "footer": "..."}
     Output ONLY JSON.
     
-    Example table format:
-    [
-      ["모델명", "공시지원금", "I", "J", ...],  // Exact headers from image
-      ["SM-F766N", 100, 45, 50, ...],           // Model code in first cell
-      ...
-    ]
+    Example of CORRECT header reading (left to right):
+    ["모델명", "공시지원금", "SK-I", "SK-J", "SK-I", "SK-J", ...]
+    
+    Example of INCORRECT header reading (DO NOT DO THIS):
+    ["모델명", "공시지원금", "SK-I", "SK-I", "SK-I", "SK-J", "SK-J", "SK-J", ...]
     """
     
     response = model.generate_content([prompt, {"mime_type": "image/jpeg", "data": file_bytes}])
@@ -107,8 +115,8 @@ def parse_image_with_gemini_v2(file_bytes, agency_name, color_hex, api_key, mode
     df.set_index(df.columns[0], inplace=True)
     df = df.apply(pd.to_numeric, errors='coerce')
     
-    # 객체 생성 시 색상 정보도 함께 저장
-    return PolicyData(agency_name, df, data["footer"], color_hex)
+    # 분석 결과만 반환 (PolicyData 객체 생성은 호출 측에서)
+    return df, data["footer"]
 
 # --- 2. 엑셀 생성 (전쟁 로직) ---
 def create_battle_excel(policies):
@@ -552,66 +560,43 @@ with tab2:
 
     if 'policies' not in st.session_state:
         st.session_state.policies = []
+    
+    # 색상 상태 관리 (파일 업로드 시에는 변경되지 않음)
+    if 'current_color' not in st.session_state:
+        st.session_state.current_color = get_random_pastel_color()
 
     # 탭 2 내부에 별도의 입력 구역 생성 (사이드바 대신)
     with st.expander("➕ 새로운 경쟁자 등록하기", expanded=True):
         col1, col2 = st.columns(2)
         with col1:
             input_agency_name = st.text_input("대리점 이름 (예: 구로 1호점)", placeholder="이름을 지어주세요")
-            # 매번 로드시 랜덤하게 다른 밝은 색을 제안함
-            default_color = get_random_pastel_color()
-            input_agency_color = st.color_picker("고유 색상 선택", default_color)
+            # 현재 세션에 저장된 색상 사용
+            input_agency_color = st.color_picker("고유 색상 선택", st.session_state.current_color)
         with col2:
             uploaded_battle_file = st.file_uploader("시세표 이미지 업로드 (배틀용)", type=['png', 'jpg'], key="battle_uploader")
         
         if st.button("목록에 추가 +", type="primary"):
-            if uploaded_battle_file and input_agency_name and gemini_api_key:
-                with st.spinner(f"AI가 '{input_agency_name}' 시세표를 분석 중..."):
-                    file_bytes = uploaded_battle_file.getvalue()
-                    
-                    # 1. Supabase에 이미지 업로드 (uploads 버킷)
-                    image_url = None
-                    if supabase_url and supabase_key:
-                        try:
-                            supabase_v2: Client = create_client(supabase_url, supabase_key)
-                            file_ext = uploaded_battle_file.name.split('.')[-1]
-                            file_name = f"policy-battle/{int(time.time())}_{uuid.uuid4()}.{file_ext}"
-                            
-                            supabase_v2.storage.from_("uploads").upload(file_name, file_bytes, {"content-type": uploaded_battle_file.type})
-                            image_url = supabase_v2.storage.from_("uploads").get_public_url(file_name)
-                        except Exception as e:
-                            # 버킷 없을 때 에러 처리
-                            if "Bucket not found" in str(e) or "404" in str(e):
-                                st.error("❌ 'uploads' 버킷이 없습니다. Supabase에서 생성해주세요.")
-                            else:
-                                st.warning(f"이미지 업로드 실패 (분석은 계속 진행): {e}")
-
-                    try:
-                        # 2. Gemini 분석 (V2 함수 사용)
-                        policy_data = parse_image_with_gemini_v2(file_bytes, input_agency_name, input_agency_color, gemini_api_key, model_name)
-                        
-                        # 3. DB에 로그 저장 (policy_uploads 테이블)
-                        if supabase_url and supabase_key and image_url:
-                            try:
-                                # DataFrame을 JSON으로 변환하여 저장
-                                parsed_json = policy_data.df.to_json(orient='split', force_ascii=False)
-                                supabase_v2.table("policy_uploads").insert({
-                                    "agency_name": input_agency_name,
-                                    "image_url": image_url,
-                                    "parsed_data": json.loads(parsed_json)
-                                }).execute()
-                            except Exception as e:
-                                st.warning(f"DB 저장 실패: {e}")
-
-                        st.session_state.policies.append(policy_data)
-                        st.success(f"'{input_agency_name}' 등록 완료!")
-                        
-                    except Exception as e:
-                        st.error(f"분석 실패: {e}")
-            elif not gemini_api_key:
-                st.error("API Key가 설정되지 않았습니다. 사이드바를 확인해주세요.")
+            if uploaded_battle_file and input_agency_name:
+                file_bytes = uploaded_battle_file.getvalue()
+                
+                # AI 분석 없이 이미지와 메타데이터만 저장
+                policy_data = PolicyData(
+                    name=input_agency_name,
+                    image_bytes=file_bytes,
+                    color_hex=input_agency_color
+                )
+                
+                st.session_state.policies.append(policy_data)
+                st.success(f"✅ '{input_agency_name}' 목록에 추가 완료! (분석은 Battle Start 시 진행됩니다)")
+                
+                # 성공적으로 추가된 후에만 색상 변경
+                st.session_state.current_color = get_random_pastel_color()
+                st.rerun()
+                
             elif not input_agency_name:
                 st.error("대리점 이름을 입력해주세요!")
+            elif not uploaded_battle_file:
+                st.error("시세표 이미지를 업로드해주세요!")
 
     # 메인 화면: 현황판
     st.subheader(f"🥊 현재 참전 중인 대리점: {len(st.session_state.policies)}곳")
@@ -620,6 +605,30 @@ with tab2:
         cols = st.columns(4)
         for idx, p in enumerate(st.session_state.policies):
             with cols[idx % 4]:
+                status_icon = "⏳" if not p.is_analyzed else "✅"
+                st.markdown(
+                    f"""
+                    <div style='background-color: {p.color_hex}; padding: 15px; border-radius: 10px; margin-bottom: 10px;'>
+                        <h4 style='margin: 0; color: #333;'>{status_icon} {p.name}</h4>
+                        <p style='margin: 5px 0 0 0; font-size: 0.9em; color: #555;'>대기 중...</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+                # 삭제 버튼
+                if st.button(f"🗑️ 삭제", key=f"delete_{idx}"):
+                    st.session_state.policies.pop(idx)
+                    st.rerun()
+
+    # 메인 화면: 현황판
+    st.subheader(f"🥊 현재 참전 중인 대리점: {len(st.session_state.policies)}곳")
+
+    if len(st.session_state.policies) > 0:
+        cols = st.columns(4)
+        for idx, p in enumerate(st.session_state.policies):
+            with cols[idx % 4]:
+                status_icon = "⏳" if not p.is_analyzed else "✅"
+                model_count = f"모델 {len(p.df)}개" if p.is_analyzed else "대기 중..."
                 # 카드를 해당 색상으로 꾸미기
                 st.markdown(
                     f"""
@@ -632,15 +641,16 @@ with tab2:
                         text-align: center;
                         box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
                     ">
-                        <h4 style="margin:0; color:black;">{p.name}</h4>
-                        <p style="margin:0; font-size:0.8em;">모델 {len(p.df)}개</p>
+                        <h4 style="margin:0; color:black;">{status_icon} {p.name}</h4>
+                        <p style="margin:0; font-size:0.8em;">{model_count}</p>
                     </div>
                     """, 
                     unsafe_allow_html=True
                 )
-                # 조건문 미리보기
-                with st.expander("조건 보기"):
-                    st.text(p.footer_text[:100] + "...")
+                # 조건문 미리보기 (분석 완료된 경우만)
+                if p.is_analyzed and p.footer_text:
+                    with st.expander("조건 보기"):
+                        st.text(p.footer_text[:100] + "...")
 
         st.divider()
 
@@ -648,35 +658,89 @@ with tab2:
         col1, col2 = st.columns([1, 2])
         with col1:
             if st.button("🚀 최고의 정책서 만들기 (Battle Start)", type="primary", use_container_width=True):
-                with st.spinner("가격 비교 및 색상 칠하는 중..."):
-                    # 1. 엑셀 생성
-                    excel_file = create_battle_excel(st.session_state.policies)
-                    st.session_state['excel_ready'] = excel_file
+                # 1. AI 분석 (아직 분석 안된 정책들)
+                with st.spinner("🤖 AI가 모든 시세표를 분석 중..."):
+                    for idx, policy in enumerate(st.session_state.policies):
+                        if not policy.is_analyzed:
+                            try:
+                                # Gemini 분석
+                                df, footer_text = parse_image_with_gemini_v2(
+                                    policy.image_bytes, 
+                                    policy.name, 
+                                    policy.color_hex, 
+                                    gemini_api_key, 
+                                    model_name
+                                )
+                                # 결과를 현재 policy 객체에 업데이트
+                                policy.df = df
+                                policy.footer_text = footer_text
+                                policy.is_analyzed = True
+                                
+                                # Supabase에 이미지 업로드 및 DB 저장
+                                if supabase_url and supabase_key:
+                                    try:
+                                        supabase_v2: Client = create_client(supabase_url, supabase_key)
+                                        file_name = f"policy-battle/{int(time.time())}_{uuid.uuid4()}.jpg"
+                                        
+                                        supabase_v2.storage.from_("uploads").upload(
+                                            file_name, 
+                                            policy.image_bytes, 
+                                            {"content-type": "image/jpeg"}
+                                        )
+                                        image_url = supabase_v2.storage.from_("uploads").get_public_url(file_name)
+                                        
+                                        # DB에 로그 저장
+                                        parsed_json = policy.df.to_json(orient='split', force_ascii=False)
+                                        supabase_v2.table("policy_uploads").insert({
+                                            "agency_name": policy.name,
+                                            "image_url": image_url,
+                                            "parsed_data": json.loads(parsed_json)
+                                        }).execute()
+                                    except Exception as e:
+                                        st.warning(f"'{policy.name}' 클라우드 저장 실패: {e}")
+                                
+                                st.toast(f"✅ {policy.name} 분석 완료!", icon="✅")
+                                
+                            except Exception as e:
+                                st.error(f"'{policy.name}' 분석 실패: {e}")
+                                # 실패해도 계속 진행
+                
+                # 2. 엑셀 생성
+                with st.spinner("📊 가격 비교 및 색상 칠하는 중..."):
+                    # 분석 완료된 정책들만 필터링
+                    analyzed_policies = [p for p in st.session_state.policies if p.is_analyzed]
                     
-                    # 2. Supabase에 결과물 업로드 및 DB 저장 (exports 버킷)
-                    if supabase_url and supabase_key:
-                        try:
-                            supabase_v2: Client = create_client(supabase_url, supabase_key)
-                            excel_name = f"battle-results/best_policy_{int(time.time())}.xlsx"
+                    if len(analyzed_policies) == 0:
+                        st.error("분석된 정책이 없습니다. AI 분석이 실패했을 수 있습니다.")
+                    else:
+                        # 엑셀 생성
+                        excel_file = create_battle_excel(analyzed_policies)
+                        st.session_state['excel_ready'] = excel_file
+                        
+                        # 3. Supabase에 결과물 업로드 및 DB 저장 (exports 버킷)
+                        if supabase_url and supabase_key:
+                            try:
+                                supabase_v2: Client = create_client(supabase_url, supabase_key)
+                                excel_name = f"battle-results/best_policy_{int(time.time())}.xlsx"
+                                
+                                # 버킷 업로드
+                                supabase_v2.storage.from_("exports").upload(excel_name, excel_file.getvalue(), {"content-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})
+                                excel_url = supabase_v2.storage.from_("exports").get_public_url(excel_name)
+                                
+                                # DB 저장
+                                participants = [p.name for p in analyzed_policies]
+                                supabase_v2.table("battle_results").insert({
+                                    "excel_url": excel_url,
+                                    "participants": participants
+                                }).execute()
+                                
+                                st.toast("클라우드에 결과가 저장되었습니다!", icon="☁️")
                             
-                            # 버킷 업로드
-                            supabase_v2.storage.from_("exports").upload(excel_name, excel_file.getvalue(), {"content-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})
-                            excel_url = supabase_v2.storage.from_("exports").get_public_url(excel_name)
-                            
-                            # DB 저장
-                            participants = [p.name for p in st.session_state.policies]
-                            supabase_v2.table("battle_results").insert({
-                                "excel_url": excel_url,
-                                "participants": participants
-                            }).execute()
-                            
-                            st.toast("클라우드에 결과가 저장되었습니다!", icon="☁️")
-                            
-                        except Exception as e:
-                            if "Bucket not found" in str(e):
-                                st.error("❌ 'exports' 버킷이 없습니다.")
-                            else:
-                                st.warning(f"클라우드 백업 실패: {e}")
+                            except Exception as e:
+                                if "Bucket not found" in str(e):
+                                    st.error("❌ 'exports' 버킷이 없습니다.")
+                                else:
+                                    st.warning(f"클라우드 백업 실패: {e}")
 
                     st.success("완성되었습니다!")
         

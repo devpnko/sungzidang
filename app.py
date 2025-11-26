@@ -145,6 +145,11 @@ def parse_image_with_gemini_v2(file_bytes, agency_name, color_hex, api_key, mode
         sub = col.get("sub_agency", "공통")
         cond = col.get("condition", "조건")
         plan = col.get("plan", "표준")
+        
+        # [Hardcoded Fix] T우주 -> 5GX 프리미엄(T우주)
+        if "T우주" in plan:
+            plan = "5GX 프리미엄(T우주)"
+            
         column_names.append(f"{sub}|{cond}({plan})")
         
     # 2. 행 데이터 -> 딕셔너리 리스트 변환 (중복 컬럼 병합)
@@ -230,6 +235,35 @@ def create_battle_excel(policies):
     ws_main = wb.active
     ws_main.title = "🏆최고의 정책서"
     
+    # --- [New] 대리점별 추가정책 입력칸 생성 (Row 1~2) ---
+    # Row 1: 대리점명
+    # Row 2: 추가정책 값 (기본 0)
+    # Map: policy_name -> cell_coordinate (e.g., "AgencyA" -> "$B$2")
+    
+    agency_adj_map = {}
+    current_adj_col = 2
+    
+    ws_main.cell(row=1, column=1, value="대리점 추가정책")
+    ws_main.cell(row=2, column=1, value="입력값(원)")
+    
+    for p in policies:
+        cell_name = ws_main.cell(row=1, column=current_adj_col, value=p.name)
+        cell_val = ws_main.cell(row=2, column=current_adj_col, value=0) # 기본값 0
+        
+        # 스타일링
+        cell_name.fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid") # 노란색
+        cell_name.alignment = Alignment(horizontal='center')
+        cell_val.alignment = Alignment(horizontal='center')
+        
+        # 좌표 저장 (절대참조)
+        col_letter = cell_val.column_letter
+        agency_adj_map[p.name] = f"${col_letter}$2"
+        
+        current_adj_col += 1
+        
+    # 메인 테이블 시작 Row
+    start_row = 4
+    
     # --- 동적 통합 로직 시작 ---
     all_models = set()
     
@@ -262,7 +296,7 @@ def create_battle_excel(policies):
     ]
     
     for c_idx, header in enumerate(headers, 1):
-        cell = ws_main.cell(row=1, column=c_idx, value=header)
+        cell = ws_main.cell(row=start_row, column=c_idx, value=header)
         cell.alignment = Alignment(horizontal='center', vertical='center')
         cell.fill = PatternFill(start_color="E0E0E0", end_color="E0E0E0", fill_type="solid")
         cell.font = Font(bold=True)
@@ -271,16 +305,16 @@ def create_battle_excel(policies):
     thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
     
     # Row 순회 (모델별)
-    for r_idx, model in enumerate(combined_index, 2):
+    for r_idx, model in enumerate(combined_index, start_row + 1):
         ws_main.cell(row=r_idx, column=1, value=model).border = thin_border
         
         # 4대 카테고리별 최대값 및 요금제 초기화
-        # 구조: {category: (max_price, best_plan, color_hex)}
+        # 구조: {category: (max_price, best_plan, color_hex, policy_name)}
         best_values = {
-            "공시(MNP)": (-1, "", None),
-            "선약(MNP)": (-1, "", None),
-            "공시(기변)": (-1, "", None),
-            "선약(기변)": (-1, "", None)
+            "공시(MNP)": (-1, "", None, None),
+            "선약(MNP)": (-1, "", None, None),
+            "공시(기변)": (-1, "", None, None),
+            "선약(기변)": (-1, "", None, None)
         }
         
         # 모든 정책서 스캔
@@ -329,9 +363,9 @@ def create_battle_excel(policies):
                     
                     # 분류된 카테고리가 있으면 최대값 비교 및 갱신
                     if category:
-                        current_max, _, _ = best_values[category]
+                        current_max, _, _, _ = best_values[category]
                         if price > current_max:
-                            best_values[category] = (price, plan_name, p.color_hex)
+                            best_values[category] = (price, plan_name, p.color_hex, p.name)
                             
         # 결과 작성
         # categories 순서와 headers 순서 매핑 필요
@@ -339,7 +373,7 @@ def create_battle_excel(policies):
         
         current_col = 2
         for cat in target_categories:
-            price, plan, color = best_values[cat]
+            price, plan, color, p_name = best_values[cat]
             
             # 가격 셀
             cell_price = ws_main.cell(row=r_idx, column=current_col)
@@ -352,7 +386,13 @@ def create_battle_excel(policies):
             cell_plan.alignment = center_align
             
             if price != -1:
-                cell_price.value = price
+                # [New] 수식 적용: =기본값 + 대리점추가정책셀
+                if p_name and p_name in agency_adj_map:
+                    adj_cell_ref = agency_adj_map[p_name]
+                    cell_price.value = f"={price}+{adj_cell_ref}"
+                else:
+                    cell_price.value = price
+                
                 cell_plan.value = plan
                 
                 # 배경색 적용 (가격 셀에만)
@@ -368,7 +408,7 @@ def create_battle_excel(policies):
             current_col += 2
 
     # 4. 하단 조건문 동적 조립
-    current_row = len(combined_index) + 3
+    current_row = len(combined_index) + start_row + 2
     ws_main.cell(row=current_row, column=1, value="[가입 조건 및 유의사항]")
     current_row += 1
     
@@ -377,14 +417,52 @@ def create_battle_excel(policies):
             ws_main.cell(row=current_row, column=1, value=f"■ {p.name}: {p.footer_text}")
             current_row += 1
             
-    # 5. 원본 데이터 시트
+    # 5. 원본 데이터 시트 (수식 적용)
     for p in policies:
         ws_raw = wb.create_sheet(title=f"원본_{p.name}")
-        for r in dataframe_to_rows(p.df, index=True, header=True):
-            ws_raw.append(r)
-        ws_raw.append([""])
-        ws_raw.append(["조건문 원본:"])
-        ws_raw.append([p.footer_text])
+        
+        # [New] 전체 추가정책 입력칸
+        ws_raw.cell(row=1, column=1, value="전체 추가정책")
+        ws_raw.cell(row=1, column=2, value="입력값(원)")
+        ws_raw.cell(row=1, column=3, value=0) # C1: 입력값
+        adj_cell_ref = "$C$1"
+        
+        # 스타일링
+        ws_raw.cell(row=1, column=3).fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
+        
+        # 데이터프레임 헤더 쓰기
+        rows = list(dataframe_to_rows(p.df, index=True, header=True))
+        # rows[0] is empty (index header placeholder)
+        # rows[1] is header
+        
+        start_row_raw = 3
+        
+        # 헤더 쓰기 (Row 3)
+        for c_idx, val in enumerate(rows[1], 1):
+            ws_raw.cell(row=start_row_raw, column=c_idx, value=val)
+            
+        # 데이터 쓰기 (Row 4~)
+        for r_idx, row_data in enumerate(rows[2:], start_row_raw + 1):
+            for c_idx, val in enumerate(row_data, 1):
+                cell = ws_raw.cell(row=r_idx, column=c_idx)
+                
+                # 첫 번째 컬럼(모델명)은 그대로
+                if c_idx == 1:
+                    cell.value = val
+                else:
+                    # 가격 컬럼은 수식 적용
+                    try:
+                        if val is not None and val != "":
+                            float_val = float(val)
+                            cell.value = f"={float_val}+{adj_cell_ref}"
+                        else:
+                            cell.value = val
+                    except:
+                        cell.value = val
+
+        last_row = start_row_raw + len(rows) - 2
+        ws_raw.cell(row=last_row + 2, column=1, value="조건문 원본:")
+        ws_raw.cell(row=last_row + 3, column=1, value=p.footer_text)
 
     output = io.BytesIO()
     wb.save(output)

@@ -68,22 +68,27 @@ def parse_image_with_gemini_v2(file_bytes, agency_name, color_hex, api_key, mode
          - If found, extract "I", "J", "Eren" as the **Sub-Agency**.
          - If NOT found (e.g., just "MNP"), use "Common" or "Main".
          
-       - **Condition Detection**:
-         - "I", "MNP", "번이", "번호이동" -> **"MNP"**
-         - "J", "Device Change", "기변", "기기변경" -> **"기변"**
-         - "New", "신규" -> **"신규"**
-         - "Public Subsidy", "공시", "공시지원금" -> **"공시"**
-         - "Selective Contract", "선약", "선택약정" -> **"선약"**
+       - **Condition Detection (CRITICAL)**:
+         - You MUST combine **Contract Type** + **Join Type**.
+         - **Contract Type**: Look for "공시", "공시지원금" -> **"공시"**. Look for "선약", "선택약정" -> **"선약"**. (If neither found, infer from context or default to "공시").
+         - **Join Type**: Look for "MNP", "번이" -> **"MNP"**. Look for "기변", "기기변경" -> **"기변"**.
+         - **Output Example**: "공시 MNP", "선약 기변", "공시 신규"
          
        - **Plan Detection**:
-         - Detect plan name (e.g., "Prime", "Save"). Map to: {plan_list_str}
+         - Detect plan name accurately. Map to: {plan_list_str}
+         - **IMPORTANT**: For "T우주", use the full name **"5GX 프리미엄(T우주)"**.
          - If no plan, use "Standard".
 
-    3. **Output Format (JSON Structure)**:
+    3. **Footer & Conditions**:
+       - Extract **ALL** text at the bottom of the image (subscription conditions, notices, additional fees, etc.).
+       - Do NOT summarize. Capture the full text as a single string.
+
+    4. **Output Format (JSON Structure)**:
        - Return a SINGLE JSON object.
        - **"columns"**: A list of objects describing each column (excluding Model column).
          - Example: `[{{"sub_agency": "I", "condition": "MNP", "plan": "5GX Prime"}}, {{"sub_agency": "J", "condition": "기변", "plan": "Save Plan"}}]`
        - **"rows"**: List of rows. Each row starts with Model Name, followed by prices corresponding to "columns".
+       - **"footer"**: The extracted footer text.
        
     **Example Output:**
     {{
@@ -235,7 +240,9 @@ def create_battle_excel(policies):
             # 인덱스(모델명) 수집: 문자열로 변환하여 추가
             for idx in models_to_scan:
                 if isinstance(idx, (str, int, float)):
-                    all_models.add(str(idx))
+                    val_str = str(idx).strip()
+                    if val_str and val_str.lower() not in ["unknown", "none", "nan"]:
+                        all_models.add(val_str)
                 else:
                     all_models.add(str(idx))
             

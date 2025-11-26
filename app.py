@@ -74,8 +74,9 @@ def parse_image_with_gemini_v2(file_bytes, agency_name, color_hex, api_key, mode
          - **Join Type**: Look for "MNP", "번이" -> **"MNP"**. Look for "기변", "기기변경" -> **"기변"**.
          - **Output Example**: "공시 MNP", "선약 기변", "공시 신규"
          
-       - **Plan Detection**:
+       - **Plan Detection (CRITICAL)**:
          - Detect plan name accurately. Map to: {plan_list_str}
+         - **Inference from Price**: If header has "109", "109000" -> **"5GX 프리미엄"**. If "89", "89000" -> **"5GX 프라임"**.
          - **IMPORTANT**: For "T우주", use the full name **"5GX 프리미엄(T우주)"**.
          - If no plan, use "Standard".
 
@@ -274,12 +275,12 @@ def create_battle_excel(policies):
         ws_main.cell(row=r_idx, column=1, value=model).border = thin_border
         
         # 4대 카테고리별 최대값 및 요금제 초기화
-        # 구조: {category: (max_price, best_plan)}
+        # 구조: {category: (max_price, best_plan, color_hex)}
         best_values = {
-            "공시(MNP)": (-1, ""),
-            "선약(MNP)": (-1, ""),
-            "공시(기변)": (-1, ""),
-            "선약(기변)": (-1, "")
+            "공시(MNP)": (-1, "", None),
+            "선약(MNP)": (-1, "", None),
+            "공시(기변)": (-1, "", None),
+            "선약(기변)": (-1, "", None)
         }
         
         # 모든 정책서 스캔
@@ -328,9 +329,9 @@ def create_battle_excel(policies):
                     
                     # 분류된 카테고리가 있으면 최대값 비교 및 갱신
                     if category:
-                        current_max, _ = best_values[category]
+                        current_max, _, _ = best_values[category]
                         if price > current_max:
-                            best_values[category] = (price, plan_name)
+                            best_values[category] = (price, plan_name, p.color_hex)
                             
         # 결과 작성
         # categories 순서와 headers 순서 매핑 필요
@@ -338,7 +339,7 @@ def create_battle_excel(policies):
         
         current_col = 2
         for cat in target_categories:
-            price, plan = best_values[cat]
+            price, plan, color = best_values[cat]
             
             # 가격 셀
             cell_price = ws_main.cell(row=r_idx, column=current_col)
@@ -353,6 +354,13 @@ def create_battle_excel(policies):
             if price != -1:
                 cell_price.value = price
                 cell_plan.value = plan
+                
+                # 배경색 적용 (가격 셀에만)
+                if color:
+                    # #RRGGBB -> RRGGBB
+                    clean_hex = color.lstrip('#')
+                    if len(clean_hex) == 6:
+                        cell_price.fill = PatternFill(start_color=clean_hex, end_color=clean_hex, fill_type="solid")
             else:
                 cell_price.value = "" 
                 cell_plan.value = ""

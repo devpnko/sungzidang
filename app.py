@@ -430,19 +430,23 @@ def create_battle_excel(policies):
         # 스타일링
         ws_raw.cell(row=1, column=3).fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
         
-        # 데이터프레임 헤더 쓰기
+        # 데이터프레임 헤더 및 데이터 쓰기
         rows = list(dataframe_to_rows(p.df, index=True, header=True))
-        # rows[0] is empty (index header placeholder)
-        # rows[1] is header
         
         start_row_raw = 3
         
+        # rows[0] is the header row
+        # rows[1:] are data rows
+        
+        if not rows:
+            continue
+
         # 헤더 쓰기 (Row 3)
-        for c_idx, val in enumerate(rows[1], 1):
+        for c_idx, val in enumerate(rows[0], 1):
             ws_raw.cell(row=start_row_raw, column=c_idx, value=val)
             
         # 데이터 쓰기 (Row 4~)
-        for r_idx, row_data in enumerate(rows[2:], start_row_raw + 1):
+        for r_idx, row_data in enumerate(rows[1:], start_row_raw + 1):
             for c_idx, val in enumerate(row_data, 1):
                 cell = ws_raw.cell(row=r_idx, column=c_idx)
                 
@@ -451,16 +455,25 @@ def create_battle_excel(policies):
                     cell.value = val
                 else:
                     # 가격 컬럼은 수식 적용
+                    # NaN 체크: pd.isna(val) or math.isnan(val)
                     try:
                         if val is not None and val != "":
+                            # 문자열인 경우도 있으므로 float 변환 시도
                             float_val = float(val)
-                            cell.value = f"={float_val}+{adj_cell_ref}"
+                            
+                            # NaN인지 확인 (math.isnan은 float에만 동작)
+                            import math
+                            if not math.isnan(float_val):
+                                cell.value = f"={float_val}+{adj_cell_ref}"
+                            else:
+                                cell.value = "" # NaN이면 빈칸
                         else:
-                            cell.value = val
-                    except:
+                            cell.value = "" # None/Empty면 빈칸
+                    except (ValueError, TypeError):
+                        # 숫자가 아닌 경우 (예: 텍스트) 그대로 출력
                         cell.value = val
-
-        last_row = start_row_raw + len(rows) - 2
+                        
+        last_row = start_row_raw + len(rows)
         ws_raw.cell(row=last_row + 2, column=1, value="조건문 원본:")
         ws_raw.cell(row=last_row + 3, column=1, value=p.footer_text)
 

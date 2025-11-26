@@ -11,6 +11,8 @@ import uuid
 import pandas as pd
 import random
 import os
+import traceback
+import re
 
 # --- Reference Data Loading ---
 def load_reference_data():
@@ -24,6 +26,7 @@ def load_reference_data():
 
 REFERENCE_DATA = load_reference_data()
 VALID_MODEL_NAMES = [m['name'] for m in REFERENCE_DATA.get('models', [])]
+VALID_PLAN_NAMES = REFERENCE_DATA.get('plans', [])
 
 # --- 유틸리티: 랜덤 파스텔 색상 생성 (어두운 색 방지) ---
 def get_random_pastel_color():
@@ -48,50 +51,139 @@ def parse_image_with_gemini_v2(file_bytes, agency_name, color_hex, api_key, mode
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel(model_name)
     
-    prompt = """
-    Analyze this mobile phone price sheet image very carefully.
+    # Reference data 로드
+    model_list_str = ", ".join(VALID_MODEL_NAMES) if VALID_MODEL_NAMES else "None"
+    plan_list_str = ", ".join(VALID_PLAN_NAMES) if VALID_PLAN_NAMES else "None"
     
-    **CRITICAL Instructions for Reading Headers:**
-    1. Read column headers from LEFT to RIGHT, ONE CELL AT A TIME in exact sequential order
-    2. Pay EXTREME attention to distinguishing these letters:
-       - Letter "I" (capital i): A straight vertical line with horizontal lines at top and bottom (like "|")
-       - Letter "J" (capital j): A vertical line that curves LEFT at the bottom (like "⅃" rotated)
-       - These letters often ALTERNATE in the header row (e.g., I, J, I, J, I, J...)
-    3. Do NOT group similar letters together - read each cell individually in order
-    4. Example: If you see columns labeled "SK-I", "SK-J", "SK-I", "SK-J"
-       → Output them in that EXACT order: ["SK-I", "SK-J", "SK-I", "SK-J"]
-       → Do NOT output: ["SK-I", "SK-I", "SK-J", "SK-J"]
+    prompt = f"""
+    Analyze this mobile phone price sheet image FULLY from TOP to BOTTOM.
+    There are often MULTIPLE tables (e.g., Premium models at top, Low-cost models at bottom).
     
-    **For Model Names:**
-    - Extract the model CODE (e.g., SM-F766N, SM-S921N) from the first column
-    - This code is crucial for accurate identification
+    **CRITICAL Instructions:**
+    1. **Scan the ENTIRE image**: Look for all tables (Main, Low Cost, etc.).
     
-    Return JSON with two parts:
-    1. "table": A list of lists representing the grid. Row 1 is headers.
-       - Row 1: EXACT header text in LEFT-TO-RIGHT order from the image
-       - For model rows: First cell must contain the model CODE (SM-XXXX format)
-       - Convert all prices to integers (e.g., 45, -5). If empty, use null.
-       - DO NOT normalize model names - keep original model codes
-    2. "footer": Extract all condition texts at the bottom as a single string.
-    
-    Structure: {"table": [[...], ...], "footer": "..."}
-    Output ONLY JSON.
-    
-    Example of CORRECT header reading (left to right):
-    ["모델명", "공시지원금", "SK-I", "SK-J", "SK-I", "SK-J", ...]
-    
-    Example of INCORRECT header reading (DO NOT DO THIS):
-    ["모델명", "공시지원금", "SK-I", "SK-I", "SK-I", "SK-J", "SK-J", "SK-J", ...]
+    2. **Header Analysis (Sub-Agency & Condition)**:
+       - **Sub-Agency Detection**:
+         - Look for codes like "I", "J", "K", "Eren", "Hong", etc. attached to headers (e.g., "SK-I", "KT-J").
+         - If found, extract "I", "J", "Eren" as the **Sub-Agency**.
+         - If NOT found (e.g., just "MNP"), use "Common" or "Main".
+         
+       - **Condition Detection**:
+         - "I", "MNP", "번이", "번호이동" -> **"MNP"**
+         - "J", "Device Change", "기변", "기기변경" -> **"기변"**
+         - "New", "신규" -> **"신규"**
+         - "Public Subsidy", "공시", "공시지원금" -> **"공시"**
+         - "Selective Contract", "선약", "선택약정" -> **"선약"**
+         
+       - **Plan Detection**:
+         - Detect plan name (e.g., "Prime", "Save"). Map to: {plan_list_str}
+         - If no plan, use "Standard".
+
+    3. **Output Format (JSON Structure)**:
+       - Return a SINGLE JSON object.
+       - **"columns"**: A list of objects describing each column (excluding Model column).
+         - Example: `[{{"sub_agency": "I", "condition": "MNP", "plan": "5GX Prime"}}, {{"sub_agency": "J", "condition": "기변", "plan": "Save Plan"}}]`
+       - **"rows"**: List of rows. Each row starts with Model Name, followed by prices corresponding to "columns".
+       
+    **Example Output:**
+    {{
+      "columns": [
+        {{"sub_agency": "I", "condition": "MNP", "plan": "5GX Prime"}},
+        {{"sub_agency": "I", "condition": "기변", "plan": "5GX Prime"}},
+        {{"sub_agency": "J", "condition": "MNP", "plan": "Save Plan"}}
+      ],
+      "rows": [
+        ["SM-S921N", 10, 20, null],
+        ["SM-A245N", null, null, 0]
+      ],
+      "footer": "..."
+    }}
     """
     
-    response = model.generate_content([prompt, {"mime_type": "image/jpeg", "data": file_bytes}])
-    text = response.text.replace("```json", "").replace("```", "").strip()
-    data = json.loads(text)
+    # Safety Settings: 모든 필터 해제 (시세표가 스팸/상업적으로 분류될 수 있음)
+    safety_settings = [
+        {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+    ]
+    
+    response = model.generate_content(
+        [prompt, {"mime_type": "image/jpeg", "data": file_bytes}],
+        safety_settings=safety_settings
+    )
+    text = response.text
+    print(f"DEBUG: Gemini Response Text: '{text}'") # 디버깅용 출력
+    
+    try:
+        # 정규표현식으로 JSON 객체 추출 (설명 텍스트 제거)
+        match = re.search(r'\{.*\}', text, re.DOTALL)
+        if match:
+            json_str = match.group(0)
+            data = json.loads(json_str)
+        else:
+            # JSON 패턴을 못 찾은 경우
+            raise ValueError("No JSON object found in response")
+            
+    except (json.JSONDecodeError, ValueError) as e:
+        st.error(f"Gemini 응답 오류: JSON 파싱 실패. 오류: {e}\n응답 내용: {text[:500]}...")
+        raise
     
     # DataFrame 변환
-    headers = data["table"][0]
-    rows = data["table"][1:]
-    df = pd.DataFrame(rows, columns=headers)
+    raw_columns = data.get("columns", [])
+    raw_rows = data.get("rows", [])
+    
+    # 1. 컬럼 이름 생성 (중복 허용, 나중에 병합됨)
+    column_names = []
+    for col in raw_columns:
+        sub = col.get("sub_agency", "공통")
+        cond = col.get("condition", "조건")
+        plan = col.get("plan", "표준")
+        column_names.append(f"{sub}|{cond}({plan})")
+        
+    # 2. 행 데이터 -> 딕셔너리 리스트 변환 (중복 컬럼 병합)
+    data_dicts = []
+    for r in raw_rows:
+        if not r: continue
+        
+        # 행 데이터 Sanitization
+        sanitized_r = []
+        for cell in r:
+            if isinstance(cell, (dict, list)):
+                sanitized_r.append(str(cell))
+            else:
+                sanitized_r.append(cell)
+        
+        # 첫 번째 값은 모델명
+        model_name = str(sanitized_r[0]) if len(sanitized_r) > 0 and sanitized_r[0] is not None else "Unknown"
+        row_dict = {"Model": model_name}
+        
+        # 나머지 값들은 가격
+        values = sanitized_r[1:]
+        for i, val in enumerate(values):
+            if i < len(column_names):
+                col_name = column_names[i]
+                # 값이 유효한 경우에만 저장 (None, 빈 문자열 제외)
+                if val is not None and val != "":
+                    # 이미 값이 있으면? (중복 컬럼) -> 덮어쓰기
+                    # (보통 Sparse해서 겹치지 않거나, 뒤에 나오는 값이 최신/유효값일 확률 높음)
+                    row_dict[col_name] = val
+                    
+        data_dicts.append(row_dict)
+        
+    # 3. DataFrame 생성
+    if data_dicts:
+        df = pd.DataFrame(data_dicts)
+        # Model 컬럼이 맨 앞에 오도록 보장 (딕셔너리 순서가 보장되지만 명시적으로)
+        cols = ["Model"] + [c for c in df.columns if c != "Model"]
+        df = df[cols]
+    else:
+        df = pd.DataFrame(columns=["Model", "Price"])
+        
+    # Footer Sanitization
+    footer = data.get("footer", "")
+    if isinstance(footer, (dict, list)):
+        footer = str(footer)
     
     # 모델 코드를 표준 모델명으로 매핑
     def map_model_code_to_name(code):
@@ -108,16 +200,22 @@ def parse_image_with_gemini_v2(file_bytes, agency_name, color_hex, api_key, mode
         return code
     
     # 첫 번째 컬럼(모델명)을 표준 이름으로 변환
-    first_col = df.columns[0]
-    df[first_col] = df[first_col].apply(map_model_code_to_name)
-    
-    # 인덱스 설정 (첫 열 기준)
-    df.set_index(df.columns[0], inplace=True)
-    df = df.apply(pd.to_numeric, errors='coerce')
+    if not df.empty:
+        first_col = df.columns[0]
+        # 첫 번째 컬럼의 값들도 문자열로 변환 (안전장치)
+        df[first_col] = df[first_col].astype(str).apply(map_model_code_to_name)
+        
+        # 인덱스 설정 (첫 열 기준)
+        # 주의: 중복된 모델명이 있을 수 있음 (다른 섹션). 따라서 인덱스로 설정하되 중복 허용
+        df.set_index(first_col, inplace=True)
+        
+        # 전체 숫자 변환 시도
+        df = df.apply(pd.to_numeric, errors='coerce')
     
     # 분석 결과만 반환 (PolicyData 객체 생성은 호출 측에서)
-    return df, data["footer"]
+    return df, footer
 
+# --- 2. 엑셀 생성 (전쟁 로직) ---
 # --- 2. 엑셀 생성 (전쟁 로직) ---
 def create_battle_excel(policies):
     wb = Workbook()
@@ -126,77 +224,143 @@ def create_battle_excel(policies):
     ws_main = wb.active
     ws_main.title = "🏆최고의 정책서"
     
-    # 기준점 잡기 (첫 번째 정책 기준)
-    base_df = policies[0].df
-    combined_index = base_df.index
-    combined_columns = base_df.columns
+    # --- 동적 통합 로직 시작 ---
+    all_models = set()
     
-    # 헤더 작성
-    ws_main.cell(row=1, column=1, value="모델명")
-    for c_idx, col in enumerate(combined_columns, 2):
-        ws_main.cell(row=1, column=c_idx, value=col)
+    for p in policies:
+        if p.df is not None and not p.df.empty:
+            # 사용자가 선택한 모델만 수집 (없으면 전체)
+            models_to_scan = p.selected_models if p.selected_models else p.df.index
+            
+            # 인덱스(모델명) 수집: 문자열로 변환하여 추가
+            for idx in models_to_scan:
+                if isinstance(idx, (str, int, float)):
+                    all_models.add(str(idx))
+                else:
+                    all_models.add(str(idx))
+            
+    sorted_models = sorted([m for m in all_models if m], key=str)
+    combined_index = sorted_models
+    # --- 동적 통합 로직 끝 ---
+    
+    # --- 헤더 작성 (4대 핵심 정책 + 요금제) ---
+    # 순서: 모델명, 공시(MNP), 선약(MNP), 공시(기변), 선약(기변)
+    headers = [
+        "모델명", 
+        "공시(MNP)", "공시(MNP)요금제", 
+        "선약(MNP)", "선약(MNP)요금제", 
+        "공시(기변)", "공시(기변)요금제", 
+        "선약(기변)", "선약(기변)요금제"
+    ]
+    
+    for c_idx, header in enumerate(headers, 1):
+        cell = ws_main.cell(row=1, column=c_idx, value=header)
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+        cell.fill = PatternFill(start_color="E0E0E0", end_color="E0E0E0", fill_type="solid")
+        cell.font = Font(bold=True)
         
     center_align = Alignment(horizontal='center', vertical='center')
     thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
     
-    winning_agencies = set() # 승리한 대리점 목록
-
-    # Row 순회
+    # Row 순회 (모델별)
     for r_idx, model in enumerate(combined_index, 2):
         ws_main.cell(row=r_idx, column=1, value=model).border = thin_border
         
-        # Col 순회 (전쟁)
-        for c_idx, col in enumerate(combined_columns, 2):
-            best_price = -9999
-            winner_policy = None
+        # 4대 카테고리별 최대값 및 요금제 초기화
+        # 구조: {category: (max_price, best_plan)}
+        best_values = {
+            "공시(MNP)": (-1, ""),
+            "선약(MNP)": (-1, ""),
+            "공시(기변)": (-1, ""),
+            "선약(기변)": (-1, "")
+        }
+        
+        # 모든 정책서 스캔
+        for p in policies:
+            if p.df is not None and model in p.df.index:
+                # 사용자가 선택한 모델에 포함되어 있는지 확인
+                if p.selected_models and model not in p.selected_models:
+                    continue
+                    
+                # 사용자가 선택한 컬럼만 스캔
+                cols_to_scan = p.selected_columns if p.selected_columns else p.df.columns
+                
+                # 해당 모델의 선택된 컬럼(조건) 확인
+                for col in cols_to_scan:
+                    col_str = str(col)
+                    val = p.df.loc[model, col]
+                    
+                    # 값이 숫자인지 확인
+                    try:
+                        price = float(val)
+                    except (ValueError, TypeError):
+                        continue
+                        
+                    # 카테고리 및 요금제 파싱
+                    # col_str format: "Sub|Cond(Plan)"
+                    category = None
+                    plan_name = ""
+                    
+                    # 요금제 추출 (괄호 안의 내용)
+                    if "(" in col_str and ")" in col_str:
+                        try:
+                            plan_name = col_str.split("(")[-1].replace(")", "")
+                        except:
+                            plan_name = "Unknown"
+                    
+                    if "공시" in col_str:
+                        if "MNP" in col_str:
+                            category = "공시(MNP)"
+                        elif "기변" in col_str:
+                            category = "공시(기변)"
+                    elif "선약" in col_str:
+                        if "MNP" in col_str:
+                            category = "선약(MNP)"
+                        elif "기변" in col_str:
+                            category = "선약(기변)"
+                    
+                    # 분류된 카테고리가 있으면 최대값 비교 및 갱신
+                    if category:
+                        current_max, _ = best_values[category]
+                        if price > current_max:
+                            best_values[category] = (price, plan_name)
+                            
+        # 결과 작성
+        # categories 순서와 headers 순서 매핑 필요
+        target_categories = ["공시(MNP)", "선약(MNP)", "공시(기변)", "선약(기변)"]
+        
+        current_col = 2
+        for cat in target_categories:
+            price, plan = best_values[cat]
             
-            # 각 정책서 비교
-            for p in policies:
-                try:
-                    price = p.df.at[model, col]
-                    if pd.notna(price) and price > best_price:
-                        best_price = price
-                        winner_policy = p
-                except:
-                    pass
+            # 가격 셀
+            cell_price = ws_main.cell(row=r_idx, column=current_col)
+            cell_price.border = thin_border
+            cell_price.alignment = center_align
             
-            cell = ws_main.cell(row=r_idx, column=c_idx)
-            cell.border = thin_border
-            cell.alignment = center_align
+            # 요금제 셀
+            cell_plan = ws_main.cell(row=r_idx, column=current_col + 1)
+            cell_plan.border = thin_border
+            cell_plan.alignment = center_align
             
-            if winner_policy:
-                cell.value = best_price
-                # 사용자가 지정한 색상 적용 (HEX 코드에서 '#' 제거)
-                clean_hex = winner_policy.color_hex.replace("#", "")
-                cell.fill = PatternFill(start_color=clean_hex, end_color=clean_hex, fill_type="solid")
-                winning_agencies.add(winner_policy)
+            if price != -1:
+                cell_price.value = price
+                cell_plan.value = plan
             else:
-                cell.value = "-"
+                cell_price.value = "" 
+                cell_plan.value = ""
+            
+            current_col += 2
 
     # 4. 하단 조건문 동적 조립
     current_row = len(combined_index) + 3
-    header_font = Font(bold=True, size=12)
-    
-    ws_main.cell(row=current_row, column=1, value="[ 📢 적용 조건 유의사항 ]").font = header_font
+    ws_main.cell(row=current_row, column=1, value="[가입 조건 및 유의사항]")
     current_row += 1
     
-    # 중복 제거를 위해 set을 list로 변환 후 정렬 (순서 보장)
-    # set에 객체를 넣었으므로 이름 기준으로 정렬
-    sorted_winners = sorted(list(winning_agencies), key=lambda x: x.name)
-    
-    for p in sorted_winners:
-        clean_hex = p.color_hex.replace("#", "")
-        
-        ws_main.merge_cells(start_row=current_row, start_column=1, end_row=current_row, end_column=5)
-        title_cell = ws_main.cell(row=current_row, column=1, value=f"■ {p.name} 조건표")
-        title_cell.fill = PatternFill(start_color=clean_hex, end_color=clean_hex, fill_type="solid")
-        title_cell.font = Font(bold=True)
-        current_row += 1
-        
-        ws_main.merge_cells(start_row=current_row, start_column=1, end_row=current_row+2, end_column=10)
-        content_cell = ws_main.cell(row=current_row, column=1, value=p.footer_text)
-        content_cell.alignment = Alignment(wrap_text=True, vertical='top')
-        current_row += 3
+    for p in policies:
+        if p.footer_text:
+            ws_main.cell(row=current_row, column=1, value=f"■ {p.name}: {p.footer_text}")
+            current_row += 1
             
     # 5. 원본 데이터 시트
     for p in policies:
@@ -591,7 +755,7 @@ with tab2:
                 
                 # 성공적으로 추가된 후에만 색상 변경
                 st.session_state.current_color = get_random_pastel_color()
-                st.rerun()
+                
                 
             elif not input_agency_name:
                 st.error("대리점 이름을 입력해주세요!")
@@ -599,7 +763,7 @@ with tab2:
                 st.error("시세표 이미지를 업로드해주세요!")
 
     # 메인 화면: 현황판
-    st.subheader(f"🥊 현재 참전 중인 대리점: {len(st.session_state.policies)}곳")
+    st.subheader(f"🥊 참전 대기 중인 대리점: {len(st.session_state.policies)}곳")
 
     if len(st.session_state.policies) > 0:
         cols = st.columns(4)
@@ -618,7 +782,6 @@ with tab2:
                 # 삭제 버튼
                 if st.button(f"🗑️ 삭제", key=f"delete_{idx}"):
                     st.session_state.policies.pop(idx)
-                    st.rerun()
 
     # 메인 화면: 현황판
     st.subheader(f"🥊 현재 참전 중인 대리점: {len(st.session_state.policies)}곳")
@@ -654,11 +817,11 @@ with tab2:
 
         st.divider()
 
-        # 엑셀 생성 버튼
+        # 엑셀 생성 버튼 영역
         col1, col2 = st.columns([1, 2])
         with col1:
-            if st.button("🚀 최고의 정책서 만들기 (Battle Start)", type="primary", use_container_width=True):
-                # 1. AI 분석 (아직 분석 안된 정책들)
+            # 1단계: AI 분석 시작
+            if st.button("🚀 1. AI 분석 시작 (Analysis Start)", type="primary", use_container_width=True):
                 with st.spinner("🤖 AI가 모든 시세표를 분석 중..."):
                     for idx, policy in enumerate(st.session_state.policies):
                         if not policy.is_analyzed:
@@ -675,6 +838,11 @@ with tab2:
                                 policy.df = df
                                 policy.footer_text = footer_text
                                 policy.is_analyzed = True
+                                
+                                # 초기 선택값 설정 (전체 선택)
+                                if df is not None:
+                                    policy.selected_models = df.index.tolist()
+                                    policy.selected_columns = df.columns.tolist()
                                 
                                 # Supabase에 이미지 업로드 및 DB 저장
                                 if supabase_url and supabase_key:
@@ -702,48 +870,92 @@ with tab2:
                                 st.toast(f"✅ {policy.name} 분석 완료!", icon="✅")
                                 
                             except Exception as e:
-                                st.error(f"'{policy.name}' 분석 실패: {e}")
+                                st.error(f"'{policy.name}' 분석 실패: {e}\n\n{traceback.format_exc()}")
                                 # 실패해도 계속 진행
-                
-                # 2. 엑셀 생성
-                with st.spinner("📊 가격 비교 및 색상 칠하는 중..."):
-                    # 분석 완료된 정책들만 필터링
-                    analyzed_policies = [p for p in st.session_state.policies if p.is_analyzed]
                     
-                    if len(analyzed_policies) == 0:
-                        st.error("분석된 정책이 없습니다. AI 분석이 실패했을 수 있습니다.")
-                    else:
-                        # 엑셀 생성
-                        excel_file = create_battle_excel(analyzed_policies)
-                        st.session_state['excel_ready'] = excel_file
-                        
-                        # 3. Supabase에 결과물 업로드 및 DB 저장 (exports 버킷)
-                        if supabase_url and supabase_key:
-                            try:
-                                supabase_v2: Client = create_client(supabase_url, supabase_key)
-                                excel_name = f"battle-results/best_policy_{int(time.time())}.xlsx"
-                                
-                                # 버킷 업로드
-                                supabase_v2.storage.from_("exports").upload(excel_name, excel_file.getvalue(), {"content-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})
-                                excel_url = supabase_v2.storage.from_("exports").get_public_url(excel_name)
-                                
-                                # DB 저장
-                                participants = [p.name for p in analyzed_policies]
-                                supabase_v2.table("battle_results").insert({
-                                    "excel_url": excel_url,
-                                    "participants": participants
-                                }).execute()
-                                
-                                st.toast("클라우드에 결과가 저장되었습니다!", icon="☁️")
-                            
-                            except Exception as e:
-                                if "Bucket not found" in str(e):
-                                    st.error("❌ 'exports' 버킷이 없습니다.")
-                                else:
-                                    st.warning(f"클라우드 백업 실패: {e}")
+                    st.success("AI 분석이 완료되었습니다! 아래에서 데이터를 검토해주세요.")
+                    st.session_state['analysis_done'] = True
 
-                    st.success("완성되었습니다!")
+        # 2단계: 검토 및 엑셀 생성 (분석 완료 시 표시)
+        analyzed_policies = [p for p in st.session_state.policies if p.is_analyzed]
         
+        if analyzed_policies:
+            st.divider()
+            st.subheader("🧐 데이터 검토 및 필터링")
+            st.info("각 대리점 탭을 눌러서 제외하고 싶은 모델(행)이나 조건(열)을 체크 해제하세요.")
+            
+            # 대리점별 탭 생성
+            tabs = st.tabs([p.name for p in analyzed_policies])
+            
+            for idx, p in enumerate(analyzed_policies):
+                # 하위 호환성: id가 없는 기존 객체에 id 부여
+                if not hasattr(p, 'id'):
+                    p.id = str(uuid.uuid4())
+                    
+                with tabs[idx]:
+                    if p.df is not None and not p.df.empty:
+                        c1, c2 = st.columns([1, 3])
+                        with c1:
+                            st.markdown(f"**[{p.name}] 필터 설정**")
+                            # 모델(행) 선택
+                            selected_rows = st.multiselect(
+                                f"포함할 모델 ({len(p.df)}개)",
+                                options=p.df.index.tolist(),
+                                default=p.selected_models if p.selected_models else p.df.index.tolist(),
+                                key=f"rows_{p.id}"
+                            )
+                            # 조건(열) 선택
+                            selected_cols = st.multiselect(
+                                f"포함할 조건 ({len(p.df.columns)}개)",
+                                options=p.df.columns.tolist(),
+                                default=p.selected_columns if p.selected_columns else p.df.columns.tolist(),
+                                key=f"cols_{p.id}"
+                            )
+                            
+                            # 선택 상태 업데이트
+                            p.selected_models = selected_rows
+                            p.selected_columns = selected_cols
+                            
+                        with c2:
+                            st.markdown("**데이터 미리보기** (선택된 항목만 엑셀에 반영됩니다)")
+                            # 필터링된 데이터프레임 보여주기
+                            try:
+                                filtered_df = p.df.loc[selected_rows, selected_cols]
+                                st.dataframe(filtered_df, use_container_width=True)
+                            except Exception as e:
+                                st.error(f"데이터 표시 오류: {e}")
+                    else:
+                        st.warning("분석된 데이터가 없습니다.")
+
+            st.divider()
+            
+            # 3단계: 최종 엑셀 생성 버튼
+            if st.button("📊 2. 최고의 정책서 만들기 (Generate Excel)", type="primary", use_container_width=True):
+                with st.spinner("최종 엑셀 파일을 생성하고 있습니다..."):
+                    # 엑셀 생성 (필터링된 데이터 반영은 create_battle_excel 내부에서 처리 필요)
+                    excel_file = create_battle_excel(analyzed_policies)
+                    st.session_state['excel_ready'] = excel_file
+                    
+                    # Supabase 업로드 로직 (기존과 동일)
+                    if supabase_url and supabase_key:
+                        try:
+                            supabase_v2: Client = create_client(supabase_url, supabase_key)
+                            excel_name = f"battle-results/best_policy_{int(time.time())}.xlsx"
+                            
+                            supabase_v2.storage.from_("exports").upload(excel_name, excel_file.getvalue(), {"content-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})
+                            excel_url = supabase_v2.storage.from_("exports").get_public_url(excel_name)
+                            
+                            participants = [p.name for p in analyzed_policies]
+                            supabase_v2.table("battle_results").insert({
+                                "excel_url": excel_url,
+                                "participants": participants
+                            }).execute()
+                            st.toast("클라우드 저장 완료!", icon="☁️")
+                        except Exception as e:
+                            st.warning(f"클라우드 백업 실패: {e}")
+                            
+                    st.success("완성되었습니다! 아래 버튼을 눌러 다운로드하세요.")
+
         with col2:
             if 'excel_ready' in st.session_state:
                 st.download_button(

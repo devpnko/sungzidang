@@ -732,6 +732,8 @@ with tab1:
                 prompt = """
                 Analyze the provided price sheet image and extract data into a specific JSON structure.
                 
+                **CRITICAL INSTRUCTION: Extract text EXACTLY as shown in the image (Korean). DO NOT TRANSLATE to English.**
+                
                 The JSON must have these keys: "top_data", "bottom_data", "footer_lines".
 
                 1. "top_data": A list of lists representing the main price table.
@@ -741,10 +743,11 @@ with tab1:
 
                 2. "bottom_data": A list of lists for the carrier condition table at the bottom.
                    - Columns: [Carrier, ServiceCondition, MonthlyFee, Duration, Penalty]
-                   - Example row: ["SK(24months)", "Plan: Premium", "109,000won", "6 months", "500,000"]
+                   - **KEEP KOREAN TEXT**: e.g., ["SK(24개월)", "요금제: 프라임", "109,000원", "6개월", "500,000원"]
 
                 3. "footer_lines": A list of strings for the caution/notice text at the very bottom.
                    - Capture each distinct line of text as a string in the list.
+                   - **KEEP KOREAN TEXT**. Do not summarize or translate.
                 
                 Output ONLY valid JSON.
                 """
